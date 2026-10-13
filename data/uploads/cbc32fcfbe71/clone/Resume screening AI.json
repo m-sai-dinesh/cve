@@ -1,0 +1,447 @@
+{
+  "name": "Resume screening AI",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Job application form ",
+        "formDescription": "Please fill this application ",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Fullname",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email-id",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Ph.no",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Resume",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d486b7b0-10f7-48cb-8d3b-cd9216147732",
+      "name": "On form submission",
+      "webhookId": "bd7c0530-5e43-4c40-ac51-e8c1c087e6ec"
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "Resume",
+        "name": "CV",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "82335892-3efd-48a1-b63b-c81cdfa17b42",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "9y7jM9lpL5U1Skw5",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "545d656b-e55c-49cf-af73-275d761f84c4",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "9y7jM9lpL5U1Skw5",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "22da096f-5f84-44e5-8cb3-b868ba3b5e88",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "d0b7e31b-fefd-4f0f-aea6-8d09dba61cb5",
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Candidates resume :  {{ $('Extract from File').item.json.text }}\n\nJob description requirements :{{ $json.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an expert technical recruiter specializing in AI, automation, and software roles.\n\nYou have been given a job description and a candidate resume. Your task is to analyze the resume in relation to the job description and provide a detailed screening report.\n\nFocus specifically on how well the candidate matches the core requirements and ideal profile outlined in the job description. Evaluate both technical skill alignment and business-context understanding. Use reasoning grounded in the actual content of the resume and job post — avoid making assumptions.\n\n## Output\n\nYour output should follow this exact format:\n\n### Candidate Strengths:\nList the top strengths or relevant qualifications the candidate brings to the table. Be specific.\n\n### Candidate Weaknesses:\nList areas where the candidate is lacking or mismatched based on the job description.\n\n### Risk Factor:\n- Assign a risk score (Low / Medium / High)\n- Explain the worst-case scenario if this candidate is hired.\n\n### Reward Factor:\n- Assign a reward score (Low / Medium / High)\n- Describe the best-case scenario — what value could this candidate unlock?\n- Does the candidate appear to be a short-term or long-term fit?\n\n### Overall Fit Rating (0–10):\nAssign a number between 0 (terrible match) and 10 (perfect match). Do not give decimals.\n\n### Justification for Rating:\nExplain clearly why this candidate received that score. Reference specific resume content and how it aligns or doesn't with the job description.\n\n###Job description \n\n {{ $json.text }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        528,
+        384
+      ],
+      "id": "98a52d68-d951-4b84-93c8-63dc1a5aabe7",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"candidate_name\": {\n      \"type\": \"string\",\n      \"description\": \"Full name of the candidate extracted from the resume.\"\n    },\n    \"job_title\": {\n      \"type\": \"string\",\n      \"description\": \"Job title from the provided job description.\"\n    },\n    \"candidate_summary\": {\n      \"type\": \"string\",\n      \"description\": \"A concise summary (2-3 sentences) describing the candidate's background, experience, and overall suitability for the role.\"\n    },\n    \"matched_skills\": {\n      \"type\": \"array\",\n      \"description\": \"List only the skills that appear in BOTH the resume and the job description.\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"missing_skills\": {\n      \"type\": \"array\",\n      \"description\": \"List skills required by the job description but missing from the candidate's resume.\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"additional_skills\": {\n      \"type\": \"array\",\n      \"description\": \"Skills present in the resume that are not explicitly mentioned in the job description but may still add value.\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"strengths\": {\n      \"type\": \"array\",\n      \"description\": \"List the candidate's strongest qualifications supported by evidence from the resume.\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"weaknesses\": {\n      \"type\": \"array\",\n      \"description\": \"List genuine weaknesses or gaps compared to the job description. Do not invent weaknesses.\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"experience_match\": {\n      \"type\": \"string\",\n      \"description\": \"Explain whether the candidate's work experience aligns with the job requirements. Mention years of experience if available.\"\n    },\n    \"education_match\": {\n      \"type\": \"string\",\n      \"description\": \"Describe whether the candidate's education satisfies the requirements in the job description.\"\n    },\n    \"risk_assessment\": {\n      \"type\": \"object\",\n      \"description\": \"Assessment of hiring risk based only on information available in the resume and job description.\",\n      \"properties\": {\n        \"risk_score\": {\n          \"type\": \"string\",\n          \"enum\": [\n            \"Low\",\n            \"Medium\",\n            \"High\"\n          ],\n          \"description\": \"Overall hiring risk.\"\n        },\n        \"reason\": {\n          \"type\": \"string\",\n          \"description\": \"Explain why this risk level was assigned.\"\n        }\n      },\n      \"required\": [\n        \"risk_score\",\n        \"reason\"\n      ]\n    },\n    \"reward_assessment\": {\n      \"type\": \"object\",\n      \"description\": \"Assessment of the candidate's potential value if hired.\",\n      \"properties\": {\n        \"reward_score\": {\n          \"type\": \"string\",\n          \"enum\": [\n            \"Low\",\n            \"Medium\",\n            \"High\"\n          ],\n          \"description\": \"Potential business value.\"\n        },\n        \"reason\": {\n          \"type\": \"string\",\n          \"description\": \"Explain why this reward level was assigned.\"\n        }\n      },\n      \"required\": [\n        \"reward_score\",\n        \"reason\"\n      ]\n    },\n    \"overall_fit_rating\": {\n      \"type\": \"integer\",\n      \"minimum\": 0,\n      \"maximum\": 10,\n      \"description\": \"Overall fit between candidate and job on a scale from 0 to 10.\"\n    },\n    \"ats_score\": {\n      \"type\": \"integer\",\n      \"minimum\": 0,\n      \"maximum\": 100,\n      \"description\": \"Overall ATS compatibility score from 0 to 100.\"\n    },\n    \"recommendation\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"Reject\",\n        \"Consider\",\n        \"Shortlist\",\n        \"Strong Hire\"\n      ],\n      \"description\": \"Final hiring recommendation.\"\n    },\n    \"interview_questions\": {\n      \"type\": \"array\",\n      \"description\": \"Generate 5 interview questions based only on the candidate's skills, experience, and any identified gaps.\",\n      \"items\": {\n        \"type\": \"string\"\n      }\n    },\n    \"justification\": {\n      \"type\": \"string\",\n      \"description\": \"Provide a detailed explanation for the ATS score and recommendation using only evidence from the resume and job description. Do not make assumptions.\"\n    }\n  },\n  \"required\": [\n    \"candidate_name\",\n    \"job_title\",\n    \"candidate_summary\",\n    \"matched_skills\",\n    \"missing_skills\",\n    \"additional_skills\",\n    \"strengths\",\n    \"weaknesses\",\n    \"experience_match\",\n    \"education_match\",\n    \"risk_assessment\",\n    \"reward_assessment\",\n    \"overall_fit_rating\",\n    \"ats_score\",\n    \"recommendation\",\n    \"interview_questions\",\n    \"justification\"\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        768,
+        528
+      ],
+      "id": "9731a76b-b393-425e-9fb5-96e9c4ce15f4",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        384,
+        528
+      ],
+      "id": "99d4a506-38f4-4946-9088-058aff287bc1",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ivELgKOmNAQ5TC2i",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1dGbWK9lEBzbqTcGOsO9zfYbV1sMvNja-",
+          "mode": "list",
+          "cachedResultName": "(anonymous)",
+          "cachedResultUrl": "https://drive.google.com/file/d/1dGbWK9lEBzbqTcGOsO9zfYbV1sMvNja-/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        832,
+        0
+      ],
+      "id": "891a7592-89a2-4a7e-a493-67e19dc1b43c",
+      "name": "Job application ",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "9y7jM9lpL5U1Skw5",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json['Email-id'] }}",
+        "subject": "Thanks for your application ",
+        "message": "=<p>Hi <strong>{{ $('On form submission').item.json.Fullname }}</strong>,</p>  <p>Thank you for applying! We've successfully received your application and resume.</p> ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        384
+      ],
+      "id": "8375e674-da3a-42f6-917a-c4b395914b96",
+      "name": "Send a message",
+      "webhookId": "060d4a82-5af1-4bcf-a3b6-b4339e9cde00",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ZNHSoAW1sVBEDGhs",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "39d18f57-c856-80e8-948f-d55483a44ca8",
+          "mode": "list",
+          "cachedResultName": "Job applicants",
+          "cachedResultUrl": "https://app.notion.com/p/39d18f57c85680e8948fd55483a44ca8"
+        },
+        "title": "={{ $('On form submission').item.json.Fullname }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Applicant name |title",
+              "title": "={{ $('On form submission').item.json.Fullname }}"
+            },
+            {
+              "key": "Application Date|date",
+              "date": "={{ $now.format('yyyy-MM-dd') }}",
+              "timezone": "Indian/Christmas"
+            },
+            {
+              "key": "Email|email",
+              "emailValue": "={{ $('On form submission').item.json['Email-id'] }}"
+            },
+            {
+              "key": "Matched skills|rich_text",
+              "textContent": "={{ $('AI Agent').item.json.output.matched_skills.join(', ') }}"
+            },
+            {
+              "key": "Missing skills|rich_text",
+              "textContent": "={{ $('AI Agent').item.json.output.missing_skills.join(', ') }}"
+            },
+            {
+              "key": "Overall fit|number",
+              "numberValue": "={{ $('AI Agent').item.json.output.overall_fit_rating }}"
+            },
+            {
+              "key": "Phone|phone_number",
+              "phoneValue": "={{ $('On form submission').item.json['Ph.no'] }}"
+            },
+            {
+              "key": "Recommendation|select",
+              "selectValue": "={{ $('AI Agent').item.json.output.recommendation }}"
+            },
+            {
+              "key": "Resume|url",
+              "urlValue": "={{ $('Upload file').item.json.webViewLink }}"
+            },
+            {
+              "key": "Reward factor|select",
+              "selectValue": "={{ $('AI Agent').item.json.output.reward_assessment.reward_score }}"
+            },
+            {
+              "key": "Risk factor|select",
+              "selectValue": "={{ $('AI Agent').item.json.output.risk_assessment.risk_score }}"
+            },
+            {
+              "key": "Strengths|rich_text",
+              "textContent": "={{ $('AI Agent').item.json.output.strengths.join('\\n• ') }}"
+            },
+            {
+              "key": "Weekness|rich_text",
+              "textContent": "={{ $('AI Agent').item.json.output.weaknesses.join('\\n• ') }}"
+            }
+          ]
+        },
+        "blockUi": {
+          "blockValues": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1168,
+        384
+      ],
+      "id": "c5f821d3-d356-47ee-a27e-5304bc7e4f63",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "id": "iBio2hiOD47rVMvO",
+          "name": "Notion account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Job application ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job application ": {
+      "main": [
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "7296ba6f-9b37-4475-9b73-2e490f1d7d0a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7f88e54b51bf9fff173c035c8ca5d54c231de586cd541daead287b7b54f68f9f"
+  },
+  "nodeGroups": [],
+  "id": "AfG6a1jxOluYGf4X",
+  "tags": []
+}

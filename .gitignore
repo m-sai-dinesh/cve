@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Next.js build
+.next/
+frontend/.next/
+out/
+frontend/out/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+.pytest_cache/
+
+# OS and Editor
+.DS_Store
+Thumbs.db
+.claude/
+*.tsbuildinfo
+
+# SQLite temp journal/wal files
+*.db-shm
+*.db-wal

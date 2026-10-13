@@ -1,0 +1,166 @@
+{
+  "assessment_seconds": 7.99,
+  "planted_finding_recall_pct": 100.0,
+  "planted_findings": [
+    {
+      "name": "Missing audit reason column (21 CFR Part 11)",
+      "detected": true
+    },
+    {
+      "name": "Local file share dependency (C:\\instrument\\)",
+      "detected": true
+    },
+    {
+      "name": "Hardcoded credentials (admin.password in config)",
+      "detected": true
+    },
+    {
+      "name": "Application server local timestamps (new Date())",
+      "detected": true
+    },
+    {
+      "name": "Dead code utility class (LegacyExcelExporter)",
+      "detected": true
+    },
+    {
+      "name": "Shared RESULT table across components",
+      "detected": true
+    }
+  ],
+  "decomposition_comparison": {
+    "rows": [
+      {
+        "metric": "services",
+        "title": "Number of services",
+        "definition": "Count of proposed clusters.",
+        "lower_is_better": null,
+        "louvain": 11.0,
+        "hdbscan": 15.0,
+        "modernrx": 9.0
+      },
+      {
+        "metric": "modularity",
+        "title": "Modularity (Newman Q)",
+        "definition": "Newman modularity of the partition on the weighted call graph.",
+        "lower_is_better": false,
+        "louvain": 0.6057,
+        "hdbscan": 0.2399,
+        "modernrx": 0.4798
+      },
+      {
+        "metric": "icp",
+        "title": "Inter-cluster call ratio",
+        "definition": "Share of call weight that crosses a cluster boundary.",
+        "lower_is_better": true,
+        "louvain": 0.2316,
+        "hdbscan": 0.3921,
+        "modernrx": 0.2974
+      },
+      {
+        "metric": "structural_modularity",
+        "title": "Structural modularity",
+        "definition": "Mean intra-cluster cohesion minus mean inter-cluster coupling.",
+        "lower_is_better": false,
+        "louvain": 0.1295,
+        "hdbscan": 0.0786,
+        "modernrx": 0.0951
+      },
+      {
+        "metric": "cohesion",
+        "title": "Cohesion",
+        "definition": "Mean intra-cluster similarity from the S matrix.",
+        "lower_is_better": false,
+        "louvain": 0.2082,
+        "hdbscan": 0.0793,
+        "modernrx": 0.1441
+      },
+      {
+        "metric": "coupling",
+        "title": "Coupling",
+        "definition": "Share of call weight crossing boundaries (objective term).",
+        "lower_is_better": true,
+        "louvain": 0.2316,
+        "hdbscan": 0.3921,
+        "modernrx": 0.2974
+      },
+      {
+        "metric": "blast_radius",
+        "title": "Blast radius",
+        "definition": "Per PRD 11.3, normalised by class count: size of every HIGH-tier cluster plus the clusters calling into it.",
+        "lower_is_better": true,
+        "louvain": 1.0286,
+        "hdbscan": 0.8571,
+        "modernrx": 0.7714
+      },
+      {
+        "metric": "reval_scope_pct",
+        "title": "Re-validation scope",
+        "definition": "Percentage of components that a change to the validated core drags into full re-validation: everything inside a cluster holding a HIGH-tier component, plus every cluster that calls into one. Classes a clusterer left unplaced count as single-class units.",
+        "lower_is_better": true,
+        "louvain": 77.1429,
+        "hdbscan": 77.1429,
+        "modernrx": 62.8571
+      },
+      {
+        "metric": "high_tier_clusters",
+        "title": "Clusters holding the validated core",
+        "definition": "Clusters containing at least one HIGH-tier component.",
+        "lower_is_better": true,
+        "louvain": 6.0,
+        "hdbscan": 4.0,
+        "modernrx": 3.0
+      },
+      {
+        "metric": "largest_cluster",
+        "title": "Largest cluster",
+        "definition": "Class count of the biggest proposed service.",
+        "lower_is_better": true,
+        "louvain": 9.0,
+        "hdbscan": 18.0,
+        "modernrx": 9.0
+      },
+      {
+        "metric": "singletons",
+        "title": "Single-class clusters",
+        "definition": "Clusters with exactly one class.",
+        "lower_is_better": true,
+        "louvain": 2.0,
+        "hdbscan": 13.0,
+        "modernrx": 1.0
+      },
+      {
+        "metric": "mixed_tier_clusters",
+        "title": "Mixed-criticality clusters",
+        "definition": "Clusters that mix HIGH-tier and LOW-tier components, so a utility change re-validates the core.",
+        "lower_is_better": true,
+        "louvain": 3.0,
+        "hdbscan": 2.0,
+        "modernrx": 1.0
+      },
+      {
+        "metric": "shared_table_writes",
+        "title": "Tables written by two clusters",
+        "definition": "Regulated tables with writers in more than one cluster - each one blocks independent deployment.",
+        "lower_is_better": true,
+        "louvain": 1.0,
+        "hdbscan": 0.0,
+        "modernrx": 0.0
+      }
+    ],
+    "variants": [
+      "louvain",
+      "hdbscan",
+      "modernrx"
+    ]
+  },
+  "headline_reval_reduction": {
+    "baseline_variant": "hdbscan",
+    "champion_variant": "modernrx",
+    "reval_scope_before": 77.1429,
+    "reval_scope_after": 62.8571,
+    "reval_scope_reduction_pp": 14.3,
+    "reval_scope_reduction_pct": 18.5
+  },
+  "evidence_validity_pct": 100.0,
+  "override_rate_pct": 11.1
+}

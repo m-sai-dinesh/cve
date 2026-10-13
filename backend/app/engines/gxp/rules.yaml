@@ -1,0 +1,391 @@
+# ==========================================================================
+# ModernRx GxP detection rules (PRD §9.3)
+#
+# Deterministic first: these rules fire before any LLM is consulted, and they
+# are the reason a GxP tag can always be explained to an auditor. Each rule
+# cites the regulatory clause it serves so the evidence pack can quote it.
+#
+# Matcher fields (all optional, ALL present ones must match):
+#   node                 Table | Class | Method | Column | ConfigItem
+#   name_regex           node name
+#   fqn_regex            fully-qualified name
+#   owner_regex          owning class (Method nodes)
+#   annotation_any       any of these annotations present
+#   calls_any            any of these call targets appear in the body
+#   writes_table_regex   node WRITES a table matching this
+#   reads_table_regex    node READS a table matching this
+#   param_type_any       any parameter of one of these types
+#   prop_true            a graph property that must be truthy
+#   literal_regex        a string literal in the body
+# ==========================================================================
+
+version: "1.2.0"
+
+tags:
+  AUDIT_TRAIL:
+    title: Audit trail
+    clause: 21 CFR 11.10(e); EU GMP Annex 11 §9
+    meaning: Creates or changes audit records of GxP data.
+  E_SIGNATURE:
+    title: Electronic signature
+    clause: 21 CFR 11 subpart C (11.50, 11.70, 11.200)
+    meaning: Applies, verifies or manifests an electronic signature.
+  ACCESS_CONTROL:
+    title: Access control
+    clause: 21 CFR 11.10(d),(g); Annex 11 §12
+    meaning: Authenticates users or enforces authorisation.
+  DATA_INTEGRITY:
+    title: Data integrity
+    clause: ALCOA++; Annex 11 §§4-7
+    meaning: Creates or modifies GxP records (results, batches, specs, deviations, CAPA).
+  PRODUCT_RELEASE:
+    title: Product release
+    clause: EU GMP Chapter 1; Annex 16 (QP certification)
+    meaning: Decides batch disposition - the decision that puts product on the market.
+  TIME_SOURCE:
+    title: Time source
+    clause: 21 CFR 11.10(e) contemporaneousness; Annex 11 §9
+    meaning: Stamps GxP records with a time read from the application server.
+  REPORTING_ONLY:
+    title: Reporting only
+    clause: CSA risk-based scaling (FDA, Sept 2025)
+    meaning: Reads GxP data without changing it.
+
+# ------------------------------- regulated domain vocabulary ---------------
+gxp_entity_regex: "(?i)(sample|result|batch|lot|spec|specification|deviation|capa|stability|custody|coa|certificate|signature|study|analyte|instrument_import|test_)"
+audit_table_regex: "(?i)(audit|history|trail|journal|changelog|revision)"
+release_regex: "(?i)(release|disposition|certify|certification|\\bqp\\b|quarantine|reject)"
+signature_regex: "(?i)(sign|signature|approve|approval|countersign|witness|endorse)"
+access_regex: "(?i)(auth|login|logon|credential|password|role|permission|principal|security|user_role|identity)"
+
+rules:
+  # ----------------------------------------------------------- AUDIT_TRAIL
+  - id: AUDIT_TABLE
+    tag: AUDIT_TRAIL
+    confidence: 0.95
+    rationale: Table name matches the audit-trail naming convention.
+    match: { node: Table, name_regex: "(?i)(audit|history|trail|journal|changelog)" }
+
+  - id: AUDIT_TABLE_WRITE
+    tag: AUDIT_TRAIL
+    confidence: 0.98
+    rationale: Method writes directly to an audit-trail table.
+    match: { node: Method, writes_table_regex: "(?i)(audit|history|trail|journal)" }
+
+  - id: AUDIT_SERVICE_CLASS
+    tag: AUDIT_TRAIL
+    confidence: 0.9
+    rationale: Class is named as an audit-trail service.
+    match: { node: Class, name_regex: "(?i)audit.*(service|dao|repository|writer|logger)|.*audit(trail)?$" }
+
+  - id: AUDIT_FIELD_SHAPE
+    tag: AUDIT_TRAIL
+    confidence: 0.8
+    rationale: Carries the old-value/new-value/changed-by shape of an audit record.
+    match: { node: Method, literal_regex: "(?i)(old_value|new_value|changed_by|changed_at|oldvalue|newvalue|changedby)" }
+
+  # ----------------------------------------------------------- E_SIGNATURE
+  - id: ESIG_METHOD_WITH_AUTH
+    tag: E_SIGNATURE
+    confidence: 0.97
+    rationale: Signing or approval method that re-verifies the signer's credentials.
+    match:
+      node: Method
+      name_regex: "(?i)^(sign|approve|countersign|endorse|release|reject|certify)"
+      calls_any: ["PasswordEncoder.matches", "matches", "authenticate", "AuthenticationManager.authenticate", "verifyReviewer", "verifyPassword", "checkPassword"]
+
+  - id: ESIG_SIGNATURE_TABLE
+    tag: E_SIGNATURE
+    confidence: 0.95
+    rationale: Writes an electronic-signature record.
+    match: { node: Method, writes_table_regex: "(?i)(signature|esign|e_sign|sign_)" }
+
+  - id: ESIG_MEANING
+    tag: E_SIGNATURE
+    confidence: 0.9
+    rationale: Records the meaning of a signature, as 21 CFR 11.50 requires.
+    match: { node: Method, literal_regex: "(?i)(signature_meaning|signaturemeaning|signed_by|signature_hash)" }
+
+  - id: ESIG_TABLE
+    tag: E_SIGNATURE
+    confidence: 0.9
+    rationale: Table holds electronic signatures.
+    match: { node: Table, name_regex: "(?i)(signature|esign)" }
+
+  - id: ESIG_PASSWORD_REENTRY
+    tag: E_SIGNATURE
+    confidence: 0.85
+    rationale: Takes a password parameter on an approval path - signature re-entry.
+    match:
+      node: Method
+      name_regex: "(?i)(approve|sign|release|reject|certify)"
+      param_name_regex: "(?i)(password|passcode|pin|credential)"
+
+  # --------------------------------------------------------- ACCESS_CONTROL
+  - id: AC_SPRING_SECURITY
+    tag: ACCESS_CONTROL
+    confidence: 0.95
+    rationale: Spring Security configuration defines the authorisation model.
+    match: { node: Class, annotation_any: ["EnableWebSecurity", "EnableGlobalMethodSecurity", "EnableMethodSecurity"] }
+
+  - id: AC_PREAUTHORIZE
+    tag: ACCESS_CONTROL
+    confidence: 0.9
+    rationale: Method is guarded by a declarative authorisation annotation.
+    match: { node: Method, annotation_any: ["PreAuthorize", "Secured", "RolesAllowed", "PostAuthorize"] }
+
+  - id: AC_USER_ROLE_TABLE
+    tag: ACCESS_CONTROL
+    confidence: 0.9
+    rationale: Manages the user/role tables that carry the access model.
+    match: { node: Method, writes_table_regex: "(?i)(lims_user|^user$|users|user_role|role|permission|account)" }
+
+  - id: AC_ROLE_TABLE
+    tag: ACCESS_CONTROL
+    confidence: 0.85
+    rationale: Table holds identities, roles or permissions.
+    match: { node: Table, name_regex: "(?i)(^user|_user|role|permission|credential|account)" }
+
+  - id: AC_AUTH_METHOD
+    tag: ACCESS_CONTROL
+    confidence: 0.85
+    rationale: Authenticates a principal or verifies a credential.
+    match: { node: Method, name_regex: "(?i)(authenticate|verifyreviewer|login|logon|checkcredential|verifypassword)" }
+
+  # --------------------------------------------------------- PRODUCT_RELEASE
+  - id: PR_RELEASE_METHOD
+    tag: PRODUCT_RELEASE
+    confidence: 0.97
+    rationale: Sets batch disposition - the QP release decision.
+    match:
+      node: Method
+      name_regex: "(?i)(release|disposition|certify|quarantine|reject)(batch|lot|product)?|applydisposition"
+      writes_table_regex: "(?i)(batch|lot|disposition)"
+
+  - id: PR_RELEASE_CLASS
+    tag: PRODUCT_RELEASE
+    confidence: 0.93
+    rationale: Class owns batch release or disposition.
+    match: { node: Class, name_regex: "(?i)(batch|lot).*(release|disposition|service)|release.*(service|manager)" }
+
+  # Reading the QP name is not a release decision - a report prints it. The
+  # write requirement is what separates "decides disposition" from "shows it".
+  - id: PR_QP
+    tag: PRODUCT_RELEASE
+    confidence: 0.9
+    rationale: Records the Qualified Person against a batch disposition.
+    match:
+      node: Method
+      literal_regex: "(?i)(qp_name|qualified.?person)"
+      writes_table_regex: "(?i)(batch|lot|disposition)"
+
+  - id: PR_BATCH_TABLE
+    tag: PRODUCT_RELEASE
+    confidence: 0.85
+    rationale: Table carries batch disposition state.
+    match: { node: Table, name_regex: "(?i)^(batch|lot)$" }
+
+  # ---------------------------------------------------------- DATA_INTEGRITY
+  # COA_REPORT is deliberately absent: it is a register of documents produced,
+  # not a GxP record being created or changed. Inserting a row there says "a
+  # certificate was printed" and alters no result, so treating it as a GxP
+  # write would tier the whole reporting module HIGH and inflate the
+  # re-validation scope for nothing.
+  - id: GXP_ENTITY_WRITE
+    tag: DATA_INTEGRITY
+    confidence: 0.95
+    rationale: Writes a GxP record.
+    match:
+      node: Method
+      writes_table_regex: "(?i)(sample|result|batch|spec|specification|deviation|capa|stability|custody|instrument_import)"
+
+  - id: GXP_ENTITY_CLASS
+    tag: DATA_INTEGRITY
+    confidence: 0.85
+    rationale: Persistent entity representing a GxP record.
+    match:
+      node: Class
+      annotation_any: ["Entity", "Document"]
+      name_regex: "(?i)(sample|result|batch|spec|deviation|capa|stability|signature|custody|study)"
+
+  - id: GXP_SERVICE_CLASS
+    tag: DATA_INTEGRITY
+    confidence: 0.8
+    rationale: Service class owning a GxP domain concept.
+    match:
+      node: Class
+      annotation_any: ["Service", "Repository", "Component"]
+      name_regex: "(?i)(sample|result|batch|spec|deviation|capa|stability|review|instrument)"
+
+  - id: GXP_TABLE
+    tag: DATA_INTEGRITY
+    confidence: 0.9
+    rationale: Table stores GxP records.
+    match:
+      node: Table
+      name_regex: "(?i)^(sample|result|batch|lot|test_specification|specification|deviation|capa|stability_study|chain_of_custody|result_signature|instrument_import)$"
+
+  - id: GXP_READ_ONLY
+    tag: REPORTING_ONLY
+    confidence: 0.8
+    rationale: Reads GxP data without writing it.
+    match:
+      node: Method
+      reads_table_regex: "(?i)(sample|result|batch|spec|deviation|capa|stability)"
+      no_writes: true
+
+  # -------------------------------------------------------------- TIME_SOURCE
+  - id: TS_LOCAL_CLOCK
+    tag: TIME_SOURCE
+    confidence: 0.9
+    rationale: Timestamps a record from the application server clock rather than the database.
+    match: { node: Method, prop_true: usesNewDate }
+
+  - id: TS_DB_NOW
+    tag: TIME_SOURCE
+    confidence: 0.7
+    rationale: Uses a database clock function in SQL.
+    match: { node: Method, literal_regex: "(?i)\\b(sysdate|now\\s*\\(|current_timestamp|getdate\\s*\\()" }
+
+# ------------------------------------------------------------- tier mapping
+# gxp_tier = HIGH   if PRODUCT_RELEASE or (DATA_INTEGRITY and writes) or E_SIGNATURE or AUDIT_TRAIL
+#            MEDIUM if DATA_INTEGRITY read-only or ACCESS_CONTROL
+#            LOW    otherwise                                      (PRD §9.2)
+tiers:
+  HIGH:
+    any_tag: [PRODUCT_RELEASE, E_SIGNATURE, AUDIT_TRAIL]
+    data_integrity_with_write: true
+  MEDIUM:
+    any_tag: [ACCESS_CONTROL, TIME_SOURCE]
+    data_integrity_read_only: true
+
+# --------------------------------------------------------- compliance gaps
+# Checks that look for a *missing* control rather than a present one.
+gaps:
+  - id: AUDIT_NO_REASON
+    severity: HIGH
+    title: Audit trail cannot record a reason for change
+    clause: 21 CFR 11.10(e); EU GMP Annex 11 §9
+    detail: >
+      The audit-trail table has no column for the reason for change. Part 11
+      requires audit trails to record the reason where it is a predicate-rule
+      requirement, and Annex 11 expects changes to GxP data to be justified.
+      Reason is currently appended into a value column as free text, which is
+      not queryable and not reportable.
+    remediation: >
+      Add a REASON column (and a controlled reason-code list) to the audit
+      table, require it on every change to a GxP record, and backfill or
+      annotate historic rows. This is a data-model change, so it needs a data
+      migration plan and re-validation of the audit-trail report.
+
+  - id: AUDIT_NO_ENTITY_LINK
+    severity: MEDIUM
+    title: Audit trail identifies the actor by free text
+    clause: 21 CFR 11.10(d); ALCOA++ Attributable
+    detail: >
+      The audit trail stores the acting user as a plain string rather than a
+      reference to the user table, so a renamed or deleted account breaks
+      attributability of historic records.
+    remediation: >
+      Store the immutable user id alongside the display name, and never delete
+      user rows - deactivate them.
+
+  - id: LOCAL_TIME_SOURCE
+    severity: HIGH
+    title: GxP timestamps come from the application server clock
+    clause: 21 CFR 11.10(e); EU GMP Annex 11 §9
+    detail: >
+      Records are stamped with the application server's local time. Across
+      multiple instances - which is exactly what a cloud migration introduces -
+      clock drift and timezone differences make the sequence of GxP events
+      unreliable, and contemporaneousness cannot be demonstrated.
+    remediation: >
+      Take all GxP timestamps from a single authoritative source (the database
+      clock or an NTP-synchronised UTC service), store them as UTC with an
+      explicit offset, and document the time-synchronisation control.
+
+  - id: SHARED_ADMIN_ACCOUNT
+    severity: HIGH
+    title: Shared administrator credential in configuration
+    clause: 21 CFR 11.10(d),(g); Annex 11 §12
+    detail: >
+      An administrator username and password are stored in a configuration file
+      and compared in plain text. A shared account means actions cannot be
+      attributed to an individual, and a credential in a config file is
+      readable by anyone with repository or filesystem access.
+    remediation: >
+      Remove the credential from configuration, move to named individual
+      accounts with role-based access, and keep any break-glass account in a
+      secrets manager with check-out logging.
+
+  - id: SECRETS_IN_CONFIG
+    severity: HIGH
+    title: Credentials stored in configuration files
+    clause: Annex 11 §12.4; general data-security expectation
+    detail: >
+      Database or service credentials are present in configuration committed
+      with the application.
+    remediation: >
+      Move every credential to a managed secrets service, inject at runtime,
+      and rotate anything that has been in version control.
+
+  - id: NO_AUDIT_ON_GXP_WRITE
+    severity: HIGH
+    title: GxP record is modified without an audit-trail entry
+    clause: 21 CFR 11.10(e)
+    detail: >
+      A write path to a regulated table does not reach the audit-trail service,
+      so the change is not recorded.
+    remediation: >
+      Route the write through the audit-trail service, or add database-level
+      triggers, and add a test that fails when a GxP write has no audit row.
+
+  - id: LOCAL_FILE_DEPENDENCE
+    severity: MEDIUM
+    title: GxP data arrives over a host filesystem path
+    clause: Annex 11 §4.8, §5 (data transfer checks)
+    detail: >
+      Instrument data is read from an absolute local or UNC path. The transfer
+      has no checksum or completeness check, and the path cannot be reached
+      from a container or managed runtime.
+    remediation: >
+      Replace with object storage or a managed file-transfer service, add a
+      verified-transfer check (checksum plus row count) and record the transfer
+      in the audit trail.
+
+  - id: H2_CONSOLE_ENABLED
+    severity: HIGH
+    title: Database console exposed in the running application
+    clause: Annex 11 §12; data-integrity expectation
+    detail: >
+      A web database console is enabled. It permits direct, unaudited
+      modification of GxP data, which breaks the audit trail entirely.
+    remediation: >
+      Disable the console in every environment above development and prove it
+      is off as part of installation qualification.
+
+  - id: AUTO_SCHEMA_UPDATE
+    severity: HIGH
+    title: Database schema is altered automatically at startup
+    clause: EU GMP Annex 11 §10 (change control); 21 CFR 11.10(a)
+    detail: >
+      The ORM is configured to update the database schema on application
+      start. The structure holding GxP records can therefore change without a
+      change-control record, a review, or a migration script, and the change
+      is invisible to the audit trail.
+    remediation: >
+      Set the schema generation to validate-only, manage every structural
+      change through versioned migration scripts under change control, and
+      verify the schema as part of installation qualification.
+
+  - id: STATEFUL_SESSION
+    severity: LOW
+    title: User identity carried in a server-side session
+    clause: n/a - architectural readiness, not a compliance gap
+    detail: >
+      The acting user is read from the servlet session. Horizontal scaling
+      needs sticky sessions or a shared session store, and a lost session can
+      leave a GxP write without an attributable actor.
+    remediation: >
+      Carry identity in a signed token validated per request, and resolve the
+      actor at the point of the write.

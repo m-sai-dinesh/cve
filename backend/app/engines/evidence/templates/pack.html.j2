@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{ project.name }} - Evidence Pack, Wave {{ wave }}</title>
+<style>
+  :root{
+    --ink:#0f172a; --muted:#4b5563; --rule:#d4d8e0; --band:#f1f4f9;
+    --high:#b91c1c; --med:#b45309; --low:#15803d; --accent:#1d4ed8;
+    --warn-bg:#fff7ed; --warn-br:#f59e0b;
+  }
+  *{box-sizing:border-box}
+  body{
+    font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink); margin:0; padding:0; background:#fff;
+  }
+  .page{max-width:1000px; margin:0 auto; padding:40px 32px 80px}
+  .kicker{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); font-weight:700}
+  h1{font-size:30px; line-height:1.2; margin:6px 0 4px}
+  .sub{color:var(--muted); font-size:15px; margin:0 0 20px}
+  h2{font-size:19px; margin:38px 0 10px; padding-bottom:7px; border-bottom:2px solid var(--ink)}
+  h3{font-size:14px; margin:22px 0 7px; color:var(--accent)}
+  h4{font-size:13px; margin:14px 0 5px}
+  p{margin:0 0 9px}
+  ul{margin:0 0 10px; padding-left:20px} li{margin:2px 0}
+  table{width:100%; border-collapse:collapse; margin:9px 0 16px; font-size:12px}
+  th{background:var(--band); text-align:left; padding:7px 9px; border-bottom:2px solid var(--ink); font-weight:700}
+  td{padding:6px 9px; border-bottom:1px solid var(--rule); vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:#0f172a; color:#e3e9f3; padding:13px 15px; border-radius:7px;
+      overflow-x:auto; font-size:11.5px; line-height:1.55}
+  .tier{font-weight:700; font-size:11px; letter-spacing:.04em}
+  .HIGH{color:var(--high)} .MEDIUM{color:var(--med)} .LOW{color:var(--low)} .MIXED{color:var(--muted)}
+  .pill{display:inline-block; padding:1px 8px; border-radius:11px; font-size:11px;
+        font-weight:700; border:1px solid currentColor}
+  .meta{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1px;
+        background:var(--rule); border:1px solid var(--rule); border-radius:7px; overflow:hidden; margin:16px 0}
+  .meta>div{background:#fff; padding:11px 13px}
+  .meta dt{font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin:0 0 3px}
+  .meta dd{margin:0; font-weight:600; font-size:14px}
+  .warn{background:var(--warn-bg); border:1px solid var(--warn-br); border-left-width:4px;
+        padding:13px 16px; border-radius:6px; margin:18px 0; font-size:13px}
+  .gap{border-left:4px solid var(--rule); padding:10px 0 10px 14px; margin:12px 0}
+  .gap.HIGH{border-left-color:var(--high)} .gap.MEDIUM{border-left-color:var(--med)}
+  .gap.LOW{border-left-color:var(--low)}
+  .gap .clause{font-size:11.5px; color:var(--muted); margin:2px 0 6px}
+  .stat-row{display:flex; gap:10px; flex-wrap:wrap; margin:12px 0}
+  .stat{flex:1 1 130px; border:1px solid var(--rule); border-radius:7px; padding:11px 13px}
+  .stat .n{font-size:24px; font-weight:700; line-height:1.1}
+  .stat .l{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em}
+  .sig td{height:34px}
+  footer{margin-top:44px; padding-top:14px; border-top:1px solid var(--rule);
+         font-size:11.5px; color:var(--muted)}
+  @media print{
+    .page{max-width:none; padding:0}
+    h2{page-break-before:always; page-break-after:avoid}
+    h2:first-of-type{page-break-before:avoid}
+    h3,h4{page-break-after:avoid}
+    table,pre,.gap{page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="kicker">Evidence Pack</div>
+  <h1>{{ project.name }} &mdash; Wave {{ wave }}</h1>
+  <p class="sub">{{ wave_meta.title or "Migration wave" }}</p>
+
+  <div class="meta">
+    <div><dt>Generated</dt><dd>{{ generated_at }}</dd></div>
+    <div><dt>Target cloud</dt><dd>{{ target_cloud }}</dd></div>
+    <div><dt>Wave window</dt><dd>{{ wave_meta.start_date or "-" }} &rarr; {{ wave_meta.end_date or "-" }}</dd></div>
+    <div><dt>Components in scope</dt><dd>{{ assurance.components | length }}</dd></div>
+    <div><dt>Status</dt><dd style="color:var(--med)">DRAFT &mdash; requires QA review</dd></div>
+  </div>
+
+  <div class="warn"><strong>Disclaimer.</strong> {{ disclaimer }}</div>
+
+  <h3>Contents</h3>
+  <ul>
+    {% for k, v in sections.items() %}<li>{{ k }}. {{ v }}</li>{% endfor %}
+  </ul>
+
+  {# ===================================================== 1 #}
+  <h2>1. System description</h2>
+  <div class="stat-row">
+    <div class="stat"><div class="n">{{ system.loc | commify }}</div><div class="l">Lines of code</div></div>
+    <div class="stat"><div class="n">{{ system.components }}</div><div class="l">Components</div></div>
+    <div class="stat"><div class="n">{{ system.tables }}</div><div class="l">Tables</div></div>
+    <div class="stat"><div class="n">{{ system.regulated_tables | length }}</div><div class="l">Regulated tables</div></div>
+    <div class="stat"><div class="n">{{ system.endpoints }}</div><div class="l">Endpoints</div></div>
+    <div class="stat"><div class="n">{{ system.graph.nodes }}</div><div class="l">Graph nodes</div></div>
+  </div>
+
+  <p>The system was analysed into a knowledge graph of {{ system.graph.nodes }} nodes and
+  {{ system.graph.edges }} relationships covering source structure, database access,
+  configuration, third-party dependencies and runtime behaviour. Primary language:
+  <strong>{{ system.primary_language }}</strong>.</p>
+
+  {% if system.regulated_tables %}
+  <h3>Regulated tables</h3>
+  <p>{{ system.regulated_tables | join(", ") }}</p>
+  {% endif %}
+
+  {% if system.use_cases %}
+  <h3>Business use cases captured from runtime traces</h3>
+  <ul>{% for u in system.use_cases %}<li>{{ u }}</li>{% endfor %}</ul>
+  {% endif %}
+
+  {% if system.eol_libraries %}
+  <h3>End-of-life dependencies</h3>
+  <table>
+    <thead><tr><th>Library</th><th>Version</th><th>Why it matters</th></tr></thead>
+    <tbody>
+    {% for l in system.eol_libraries %}
+      <tr><td><code>{{ l.name }}</code></td><td>{{ l.version }}</td><td>{{ l.reason }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  {% if system.diagrams.context %}
+  <h3>Context diagram (C4 level 1)</h3>
+  <pre>{{ system.diagrams.context }}</pre>
+  <h3>Container diagram (C4 level 2)</h3>
+  <pre>{{ system.diagrams.containers }}</pre>
+  {% endif %}
+
+  {# ===================================================== 2 #}
+  <h2>2. Intended use and GxP impact</h2>
+  <p>{{ assurance.summary }}</p>
+
+  <h3>Intended use per component</h3>
+  <table>
+    <thead><tr><th>Component</th><th>Tier</th><th>Tags</th><th>Intended use</th></tr></thead>
+    <tbody>
+    {% for c in assurance.components %}
+      <tr>
+        <td><code>{{ c.name.split(".")[-1] }}</code></td>
+        <td class="tier {{ c.tier }}">{{ c.tier }}</td>
+        <td style="font-size:11px">{{ c.tags | join(", ") }}</td>
+        <td>{{ c.intended_use }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  {% if gxp.gaps %}
+  <h3>Compliance gaps identified in the current system</h3>
+  {% for g in gxp.gaps %}
+    <div class="gap {{ g.severity }}">
+      <h4><span class="pill {{ g.severity }}">{{ g.severity }}</span> {{ g.title }}</h4>
+      <p class="clause">{{ g.clause }}</p>
+      <p>{{ g.detail }}</p>
+      <p><strong>Remediation.</strong> {{ g.remediation }}</p>
+      {% if g.evidence_names %}
+      <p style="font-size:11.5px;color:var(--muted)">Evidence:
+        {% for n in g.evidence_names %}<code>{{ n.split(".")[-1] }}</code>{% if not loop.last %}, {% endif %}{% endfor %}
+        {% if g.evidence_count > g.evidence_names | length %}
+          (+{{ g.evidence_count - (g.evidence_names | length) }} more)
+        {% endif %}
+      </p>
+      {% endif %}
+    </div>
+  {% endfor %}
+  {% endif %}
+
+  {# ===================================================== 3 #}
+  <h2>3. Risk-based assurance plan (CSA)</h2>
+  <p>Computer Software Assurance scales assurance effort to risk rather than
+  documenting everything equally. Of {{ assurance.components | length }} component(s)
+  in this wave, <strong>{{ assurance.tier_counts.HIGH }}</strong> require scripted
+  testing with independent review
+  ({{ assurance.scripted_share_pct }}% of the wave).</p>
+
+  {% for tier in ["HIGH", "MEDIUM", "LOW"] %}
+    {% if assurance.tier_counts[tier] %}
+    {% set spec = assurance.approach_by_tier[tier] %}
+    <h3><span class="tier {{ tier }}">{{ tier }} tier</span> &mdash; {{ spec.approach }}
+      ({{ assurance.tier_counts[tier] }} component{{ "s" if assurance.tier_counts[tier] != 1 }})</h3>
+    <p>{{ spec.rationale }}</p>
+    <h4>Activities</h4>
+    <ul>{% for a in spec.activities %}<li>{{ a }}</li>{% endfor %}</ul>
+    <h4>Evidence to retain</h4>
+    <ul>{% for e in spec.evidence %}<li>{{ e }}</li>{% endfor %}</ul>
+    <p style="font-size:12px;color:var(--muted)">
+      <strong>Reviewer:</strong> {{ spec.reviewer }} &nbsp;|&nbsp;
+      <strong>Approval:</strong> {{ spec.approval }}</p>
+    {% endif %}
+  {% endfor %}
+
+  {% set crit = assurance.components | selectattr("critical_functions") | list %}
+  {% if crit %}
+  <h3>Critical functions requiring scripted test cases</h3>
+  <table>
+    <thead><tr><th>Component</th><th>Tier</th><th>Critical function and acceptance criterion</th></tr></thead>
+    <tbody>
+    {% for c in crit %}
+      <tr>
+        <td><code>{{ c.name.split(".")[-1] }}</code></td>
+        <td class="tier {{ c.tier }}">{{ c.tier }}</td>
+        <td><ul style="margin:0">{% for f in c.critical_functions %}<li><code>{{ f }}</code></li>{% endfor %}</ul></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  {# ===================================================== 4 #}
+  <h2>4. Characterisation tests</h2>
+  <p>{{ tests.coverage_note }}</p>
+  <table>
+    <thead><tr><th>Artefact</th><th>Kind</th><th>Tier</th><th>Why this artefact</th></tr></thead>
+    <tbody>
+    {% for t in tests.tests %}
+      <tr>
+        <td><code>{{ t.name }}</code></td><td>{{ t.kind }}</td>
+        <td class="tier {{ t.tier }}">{{ t.tier }}</td><td>{{ t.rationale }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  {% for t in tests.tests[:3] %}
+  <h3>{{ t.name }}</h3>
+  <pre>{{ t.source }}</pre>
+  {% endfor %}
+
+  {# ===================================================== 5 #}
+  <h2>5. Shadow / differential testing plan</h2>
+  <p>{{ differential.method }}</p>
+  <p><strong>Duration.</strong> {{ differential.duration }}</p>
+  <h3>Comparison rules</h3>
+  <ul>{% for r in differential.comparison_rules %}<li>{{ r }}</li>{% endfor %}</ul>
+  <h3>Exit criteria</h3>
+  <ul>{% for r in differential.exit_criteria %}<li>{{ r }}</li>{% endfor %}</ul>
+  {% if differential.endpoints %}
+  <h3>Endpoints in scope</h3>
+  <table>
+    <thead><tr><th>Endpoint</th><th>Tier</th><th>Handler</th></tr></thead>
+    <tbody>
+    {% for e in differential.endpoints %}
+      <tr><td><code>{{ e.endpoint }}</code></td>
+          <td class="tier {{ e.gxp_tier }}">{{ e.gxp_tier }}</td>
+          <td style="font-size:11px">{{ e.handler }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+  {% if differential.use_cases %}
+  <h3>Use cases to replay</h3>
+  <table>
+    <thead><tr><th>Use case</th><th>Observed calls</th></tr></thead>
+    <tbody>
+    {% for u in differential.use_cases %}
+      <tr><td>{{ u.name }}</td><td>{{ u.hits | commify }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  {# ===================================================== 6 #}
+  <h2>6. Data migration checks</h2>
+  <p><strong>{{ data_migration.regulated_count }}</strong> of
+  {{ data_migration.tables | length }} table(s) in scope hold regulated records.</p>
+  <ul>{% for r in data_migration.general_requirements %}<li>{{ r }}</li>{% endfor %}</ul>
+  <table>
+    <thead><tr><th>Table</th><th>Regulated</th><th>Mode</th><th>Verification checks</th></tr></thead>
+    <tbody>
+    {% for t in data_migration.tables %}
+      <tr>
+        <td><code>{{ t.table }}</code></td>
+        <td>{% if t.regulated %}<span class="pill HIGH">YES</span>{% else %}&mdash;{% endif %}</td>
+        <td>{{ t.modes }}</td>
+        <td><ul style="margin:0">{% for c in t.checks %}<li>{{ c }}</li>{% endfor %}</ul></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  {# ===================================================== 7 #}
+  <h2>7. Traceability matrix</h2>
+  <p>{{ traceability | length }} requirement-to-evidence link(s), derived from the GxP
+  criticality analysis so the matrix stays consistent with the rest of this pack.</p>
+  <table>
+    <thead><tr>
+      <th>ID</th><th>Requirement</th><th>Component</th><th>Tier</th>
+      <th>Strategy</th><th>Test approach</th><th>Reviewer</th>
+    </tr></thead>
+    <tbody>
+    {% for r in traceability %}
+      <tr>
+        <td><code>{{ r.id }}</code></td>
+        <td>{{ r.requirement }}</td>
+        <td><code>{{ r.component.split(".")[-1] }}</code></td>
+        <td class="tier {{ r.gxp_tier }}">{{ r.gxp_tier }}</td>
+        <td>{{ r.strategy or "-" }}</td>
+        <td>{{ r.test_approach }}</td>
+        <td>{{ r.reviewer }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  {# ===================================================== 8 #}
+  <h2>8. Rollback plan</h2>
+  <h3>Trigger criteria</h3>
+  <ul>{% for r in rollback.trigger_criteria %}<li>{{ r }}</li>{% endfor %}</ul>
+  <h3>Procedure</h3>
+  <ol>{% for r in rollback.procedure %}<li>{{ r }}</li>{% endfor %}</ol>
+  <h3>Regulated data created after cutover</h3>
+  <div class="warn">{{ rollback.data_considerations }}</div>
+  <p><strong>Rollback window.</strong> {{ rollback.rollback_window }}</p>
+  <p><strong>Decision authority.</strong> {{ rollback.decision_authority }}</p>
+
+  {# ===================================================== 9 #}
+  <h2>9. Cloud supplier oversight checklist</h2>
+  <p style="font-size:12px;color:var(--muted)">{{ supplier.basis }}</p>
+  <table>
+    <thead><tr><th>Item</th><th>What is required</th><th>Owner</th><th>When</th></tr></thead>
+    <tbody>
+    {# supplier['items'], not supplier.items - the latter resolves to dict.items #}
+    {% for i in supplier["items"] %}
+      <tr><td><strong>{{ i.item }}</strong></td><td>{{ i.detail }}</td>
+          <td>{{ i.owner }}</td><td>{{ i.status }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  {# ===================================================== Annexes #}
+  <h2>Annex A &mdash; Modernization decisions in this wave</h2>
+  <table>
+    <thead><tr>
+      <th>Cluster</th><th>Strategy</th><th>Patterns</th><th>Confidence</th>
+      <th>Effort (weeks)</th><th>Rationale</th>
+    </tr></thead>
+    <tbody>
+    {% for x in decisions %}
+      <tr>
+        <td><code>{{ x.cluster_id }}</code></td>
+        <td><strong>{{ x.strategy }}</strong></td>
+        <td style="font-size:11px">{{ x.target_pattern | join(", ") }}</td>
+        <td>{{ "%.0f" | format((x.confidence or 0) * 100) }}%</td>
+        <td>{{ x.effort_weeks | join(" / ") }}</td>
+        <td>{{ x.rationale }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  {% for x in decisions %}
+    {% if x.dissent %}
+    <h3>Recorded dissent &mdash; {{ x.cluster_id }}</h3>
+    <table>
+      <thead><tr><th>Agent</th><th>Position</th><th>Reason</th></tr></thead>
+      <tbody>
+      {% for v in x.dissent %}
+        <tr><td>{{ v.agent }}</td><td><strong>{{ v.position }}</strong></td><td>{{ v.reason }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  {% endfor %}
+
+  {% if montecarlo.percentiles %}
+  <h2>Annex B &mdash; Schedule confidence</h2>
+  <p>{{ montecarlo.runs | commify }} Monte Carlo runs over the solved schedule,
+  with each task duration drawn from its PERT estimate
+  ({{ montecarlo.distribution }}).</p>
+  <table>
+    <thead><tr><th>Percentile</th><th>Weeks</th><th>Date</th></tr></thead>
+    <tbody>
+    {% for k in ["p50", "p80", "p95"] %}
+      <tr><td>{{ k | upper }}</td><td>{{ "%.1f" | format(montecarlo.percentiles[k]) }}</td>
+          <td>{{ montecarlo.dates[k] }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  <h2>Annex C &mdash; Review and approval</h2>
+  <p>This pack is a draft produced by ModernRx. Signing below records that the
+  named reviewer has assessed its content for this wave.</p>
+  <table class="sig">
+    <thead><tr><th>Role</th><th>Name</th><th>Signature</th><th>Date</th></tr></thead>
+    <tbody>
+      <tr><td>Prepared by (ModernRx)</td><td>Automated draft</td><td>n/a</td>
+          <td>{{ generated_at[:10] }}</td></tr>
+      <tr><td>Reviewed by (System owner)</td><td></td><td></td><td></td></tr>
+      <tr><td>Approved by (QA)</td><td></td><td></td><td></td></tr>
+      <tr><td>Noted by (Qualified Person)</td><td></td><td></td><td></td></tr>
+    </tbody>
+  </table>
+
+  {% if approvals %}
+  <h3>Decisions already approved in ModernRx</h3>
+  <table>
+    <thead><tr><th>Decision</th><th>Approver</th><th>When</th><th>Comment</th></tr></thead>
+    <tbody>
+    {% for a in approvals %}
+      <tr><td><code>{{ a.decision_id }}</code></td><td>{{ a.user }}</td>
+          <td>{{ a.ts }}</td><td>{{ a.comment }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  <footer>
+    Generated by ModernRx on {{ generated_at }} &middot;
+    {{ project.name }} &middot; Wave {{ wave }} &middot; Target cloud {{ target_cloud }}<br>
+    {{ disclaimer }}
+  </footer>
+</div>
+</body>
+</html>

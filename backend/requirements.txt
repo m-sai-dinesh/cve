@@ -1,0 +1,29 @@
+# ModernRx backend — pinned floors, all pure-pip, no system libraries required.
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.8
+pydantic-settings>=2.4
+python-multipart>=0.0.9
+sqlalchemy>=2.0
+PyYAML>=6.0
+networkx>=3.3
+numpy>=1.26
+scipy>=1.13
+pandas>=2.2
+scikit-learn>=1.5
+ortools>=9.10
+jinja2>=3.1
+reportlab>=4.2
+structlog>=24.1
+httpx>=0.27
+sqlglot>=25.0
+lizard>=1.17
+GitPython>=3.1
+google-genai>=0.3
+
+# Optional: mirror the knowledge graph into a real Neo4j if NEO4J_URI is set.
+neo4j>=5.20
+
+# Dev
+pytest>=8.2
+pytest-asyncio>=0.23

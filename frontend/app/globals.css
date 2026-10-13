@@ -1,0 +1,180 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Light is the default because this is a document-and-evidence tool that people
+ * print from and review beside a paper SOP. Dark mode is fully supported
+ * (PRD §18) and is toggled by data-theme on <html>.
+ */
+:root {
+  --bg: 248 250 252;
+  --surface: 255 255 255;
+  --raised: 241 245 249;
+  --line: 215 221 230;
+  --ink: 15 23 42;
+  --muted: 71 85 105;
+  --faint: 148 163 184;
+
+  --accent: 29 78 216;
+  --accent-soft: 219 234 254;
+
+  /* GxP tiers. Contrast checked against both surface colours. */
+  --high: 185 28 28;
+  --high-soft: 254 226 226;
+  --medium: 180 83 9;
+  --medium-soft: 254 243 199;
+  --low: 21 128 61;
+  --low-soft: 220 252 231;
+  --info: 2 132 199;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+:root[data-theme="dark"] {
+  --bg: 8 11 18;
+  --surface: 17 23 34;
+  --raised: 27 35 48;
+  --line: 44 55 72;
+  --ink: 237 242 249;
+  --muted: 158 172 190;
+  --faint: 108 124 145;
+
+  --accent: 96 155 255;
+  --accent-soft: 25 44 82;
+
+  --high: 248 113 113;
+  --high-soft: 61 20 20;
+  --medium: 251 191 36;
+  --medium-soft: 61 42 10;
+  --low: 74 222 128;
+  --low-soft: 14 48 28;
+  --info: 56 189 248;
+}
+
+* {
+  border-color: rgb(var(--line));
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: rgb(var(--bg));
+  color: rgb(var(--ink));
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------------------------------------------------------------- scrollbars */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgb(var(--line));
+  border-radius: 6px;
+  border: 2px solid rgb(var(--bg));
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--faint));
+}
+
+/* --------------------------------------------------------------- primitives */
+@layer components {
+  .card {
+    @apply rounded-xl border bg-surface shadow-card;
+  }
+  .card-pad {
+    @apply rounded-xl border bg-surface shadow-card p-5;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border px-3.5 py-2
+           text-sm font-medium transition-all duration-150 ease-out select-none
+           active:scale-[0.98] motion-reduce:transform-none motion-reduce:transition-none
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2
+           disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100;
+  }
+  .btn-ghost {
+    @apply btn border-transparent text-muted hover:bg-raised hover:text-ink;
+  }
+  .btn-outline {
+    @apply btn border-line bg-surface text-ink shadow-sm hover:bg-raised hover:text-ink;
+  }
+  .btn-primary {
+    @apply btn border-transparent bg-accent text-white shadow-sm hover:brightness-105 active:brightness-95
+           focus-visible:ring-accent/50;
+  }
+  .btn-danger {
+    @apply btn border-transparent bg-high text-white shadow-sm hover:brightness-105 active:brightness-95
+           focus-visible:ring-high/50;
+  }
+  .input {
+    @apply w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink
+           placeholder:text-faint transition-colors duration-150
+           focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/25;
+  }
+  .label {
+    @apply mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full border px-2 py-0.5
+           text-2xs font-semibold;
+  }
+  .kpi {
+    @apply text-2xl font-bold tabular-nums leading-none tracking-tight;
+  }
+  .table-head {
+    @apply sticky top-0 z-10 bg-raised text-left text-2xs font-semibold
+           uppercase tracking-wider text-muted;
+  }
+  .mono {
+    @apply font-mono text-xs;
+  }
+  .link {
+    @apply text-accent underline decoration-accent/30 underline-offset-2
+           hover:decoration-accent;
+  }
+  .prose-sm-custom {
+    @apply text-sm leading-relaxed;
+  }
+  .prose-sm-custom p {
+    @apply mb-2;
+  }
+  .prose-sm-custom strong {
+    @apply font-semibold text-ink;
+  }
+  .prose-sm-custom ul {
+    @apply mb-2 list-disc space-y-0.5 pl-5;
+  }
+  .prose-sm-custom code {
+    @apply rounded bg-raised px-1 py-0.5 font-mono text-[0.8em];
+  }
+  .prose-sm-custom em {
+    @apply italic text-muted;
+  }
+}
+
+/* ------------------------------------------------------------ cytoscape host */
+.cy-host {
+  background-image: radial-gradient(rgb(var(--line) / 0.55) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Mermaid renders inline SVG; keep it from overflowing its card. */
+.mermaid-host svg {
+  max-width: 100%;
+  height: auto;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
