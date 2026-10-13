@@ -251,25 +251,25 @@ export default function OverviewPage() {
 
             <Card title="5 Expected Outcomes" subtitle="Delivered business and architectural outcomes">
               <ul className="space-y-2 text-xs">
-                <li className="flex items-center gap-2">
-                  <span className="grid h-5 w-5 place-items-center rounded bg-low/15 text-xs font-bold text-low">⚡</span>
-                  <span><strong>1. Faster architecture assessments:</strong> Delivered in ~{num(p.assessment_seconds ?? 8, 1)}s vs weeks of manual audits.</span>
+                <li className="flex items-center gap-2.5">
+                  <span className="grid h-5 w-5 place-items-center rounded bg-low/10 text-2xs font-semibold text-low">1</span>
+                  <span><strong>Faster architecture assessments:</strong> Delivered in ~{num(p.assessment_seconds ?? 8, 1)}s vs weeks of manual audits.</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="grid h-5 w-5 place-items-center rounded bg-low/15 text-xs font-bold text-low">🧭</span>
-                  <span><strong>2. Clear migration strategy:</strong> 7R recommendations with PERT effort estimates per service.</span>
+                <li className="flex items-center gap-2.5">
+                  <span className="grid h-5 w-5 place-items-center rounded bg-low/10 text-2xs font-semibold text-low">2</span>
+                  <span><strong>Clear migration strategy:</strong> 7R recommendations with PERT effort estimates per service.</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="grid h-5 w-5 place-items-center rounded bg-low/15 text-xs font-bold text-low">🛡️</span>
-                  <span><strong>3. Reduced transformation risk:</strong> {s.decomposition?.comparison?.headline?.reval_scope_reduction_pp ? `Re-validation scope cut by ${num(s.decomposition.comparison.headline.reval_scope_reduction_pp, 1)} percentage points.` : "Validation blast radius minimized."}</span>
+                <li className="flex items-center gap-2.5">
+                  <span className="grid h-5 w-5 place-items-center rounded bg-low/10 text-2xs font-semibold text-low">3</span>
+                  <span><strong>Reduced transformation risk:</strong> {s.decomposition?.comparison?.headline?.reval_scope_reduction_pp ? `Re-validation scope cut by ${num(s.decomposition.comparison.headline.reval_scope_reduction_pp, 1)} percentage points.` : "Validation blast radius minimized."}</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="grid h-5 w-5 place-items-center rounded bg-low/15 text-xs font-bold text-low">📈</span>
-                  <span><strong>4. Improved scalability & maintainability:</strong> Decoupled microservice boundaries with low ICP.</span>
+                <li className="flex items-center gap-2.5">
+                  <span className="grid h-5 w-5 place-items-center rounded bg-low/10 text-2xs font-semibold text-low">4</span>
+                  <span><strong>Improved scalability & maintainability:</strong> Decoupled microservice boundaries with low ICP.</span>
                 </li>
-                <li className="flex items-center gap-2">
-                  <span className="grid h-5 w-5 place-items-center rounded bg-low/15 text-xs font-bold text-low">☁️</span>
-                  <span><strong>5. Accelerated cloud adoption:</strong> Actionable CP-SAT waves with FDA CSA assurance evidence pack.</span>
+                <li className="flex items-center gap-2.5">
+                  <span className="grid h-5 w-5 place-items-center rounded bg-low/10 text-2xs font-semibold text-low">5</span>
+                  <span><strong>Accelerated cloud adoption:</strong> Actionable CP-SAT waves with FDA CSA assurance evidence pack.</span>
                 </li>
               </ul>
             </Card>
@@ -298,7 +298,7 @@ export default function OverviewPage() {
               detail={s.decomposition
                 ? `${num(s.decomposition.clusters)} candidate services · chosen variant: ${s.decomposition.chosen}`
                 : "not run"} />
-            <Stage n={5} Icon={MessagesSquare} title="AI Architecture Council"
+            <Stage n={5} Icon={MessagesSquare} title="Architecture Council"
               href={`/projects/${id}/council`} done={!!p.counts.decisions}
               detail={p.counts.decisions
                 ? `${num(p.counts.decisions)} decisions · ${num(p.counts.approved)} approved, ${num(p.counts.rejected)} rejected${s.council?.needs_review ? ` · ${s.council.needs_review} need review` : ""}`

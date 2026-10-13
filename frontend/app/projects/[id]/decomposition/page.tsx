@@ -4,7 +4,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowDown, ArrowRight, Check, ChevronDown, ChevronRight, Database,
   GitFork, HelpCircle, Layers, Play, RefreshCw, Settings, ShieldAlert,
-  Sparkles, TrendingDown,
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import React from "react";
@@ -101,24 +100,24 @@ export default function DecompositionPage() {
         </Card>
       )}
 
-      {/* ---------------------------------------------------------------- THE HEADLINE MONEY SHOT */}
+      {/* Validation Scope Comparison */}
       {headline && (
-        <div className="rounded-2xl border-2 border-accent/40 bg-gradient-to-br from-accent-soft/40 via-surface to-raised/50 p-6 shadow-pop">
+        <div className="card p-5 border-line shadow-card">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="space-y-1">
-              <span className="chip border-accent/40 bg-accent text-white text-2xs font-bold uppercase tracking-wider">
-                The Money Shot &middot; Validation Impact
+              <span className="chip border-line bg-raised text-muted text-2xs font-semibold uppercase tracking-wider">
+                Validation Scope Comparison
               </span>
-              <h2 className="text-xl font-extrabold tracking-tight sm:text-2xl text-ink">
+              <h2 className="text-lg font-bold tracking-tight text-ink">
                 Re-Validation Scope Reduction:{" "}
                 <span className="text-low">
                   {headline.reval_scope_reduction_pp != null
                     ? `-${headline.reval_scope_reduction_pp.toFixed(1)} pp`
                     : "-36 pp"}
                 </span>{" "}
-                <span className="text-sm font-semibold text-muted">
+                <span className="text-xs font-semibold text-muted">
                   ({headline.reval_scope_reduction_pct != null
-                    ? `${headline.reval_scope_reduction_pct.toFixed(0)}% less re-validation`
+                    ? `${headline.reval_scope_reduction_pct.toFixed(0)}% reduction`
                     : "50% reduction"})
                 </span>
               </h2>
@@ -128,22 +127,22 @@ export default function DecompositionPage() {
               </p>
             </div>
 
-            <div className="flex shrink-0 items-center gap-6 rounded-xl border bg-surface/90 px-5 py-3 shadow-sm">
+            <div className="flex shrink-0 items-center gap-6 rounded-lg border border-line bg-surface px-5 py-3 shadow-xs">
               <div className="text-center">
                 <span className="block text-3xs font-semibold uppercase tracking-wider text-muted">
-                  Naive Split
+                  Baseline Split
                 </span>
-                <span className="font-mono text-lg font-bold text-high">
+                <span className="font-mono text-base font-bold text-high">
                   {pct(headline.reval_scope_before * 100, 1)}
                 </span>
                 <span className="block text-3xs text-faint">needing reval</span>
               </div>
-              <ArrowRight className="h-5 w-5 text-accent" />
+              <ArrowRight className="h-4 w-4 text-muted" />
               <div className="text-center">
                 <span className="block text-3xs font-semibold uppercase tracking-wider text-muted">
-                  ModernRx Split
+                  Optimized Split
                 </span>
-                <span className="font-mono text-xl font-extrabold text-low">
+                <span className="font-mono text-base font-bold text-low">
                   {pct(headline.reval_scope_after * 100, 1)}
                 </span>
                 <span className="block text-3xs text-low font-semibold">protected core</span>

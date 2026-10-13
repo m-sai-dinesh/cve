@@ -116,7 +116,7 @@ export default function AuditPage() {
         />
         <Kpi
           label="Chain Integrity"
-          value={chain?.valid ? "VALID ✓" : "VERIFIED"}
+          value={chain?.valid ? "Valid" : "Verified"}
           tone="low"
           hint="SHA-256 tamper-evident"
           icon={<Lock className="h-4 w-4" />}

@@ -12,7 +12,7 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
-  CornerDownLeft, Database, Sparkles, TriangleAlert, Code2, Bot, UserRound,
+  CornerDownLeft, Database, Search, TriangleAlert, Code2, Bot, UserRound,
 } from "lucide-react";
 import React from "react";
 import Markdown from "react-markdown";
@@ -75,8 +75,8 @@ export function AskTwin({
 
   return (
     <Drawer open={open} onClose={onClose} width="max-w-2xl"
-      title={<span className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-accent" /> Ask the Twin</span>}
-      subtitle="Grounded in the knowledge graph through whitelisted query templates - the model never writes Cypher.">
+      title={<span className="flex items-center gap-2"><Search className="h-4 w-4 text-muted" /> Architecture Query</span>}
+      subtitle="Query knowledge graph entities and dependencies via whitelisted query templates.">
       <div className="flex h-full flex-col">
         <div ref={scroller} className="min-h-0 flex-1 space-y-4 overflow-y-auto p-5">
           {turns.length === 0 && (
@@ -127,14 +127,14 @@ export function AskTwin({
                               text-sm leading-relaxed text-white shadow-sm font-medium">
                   {turn.question}
                 </p>
-                <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full
+                <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-md
                                  bg-raised text-muted border border-line/50">
                   <UserRound className="h-3.5 w-3.5" />
                 </span>
               </div>
 
               <div className="flex items-start gap-2.5">
-                <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full
+                <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-md
                                  bg-accent-soft text-accent border border-accent/20">
                   <Bot className="h-3.5 w-3.5" />
                 </span>
@@ -146,7 +146,7 @@ export function AskTwin({
                     </p>
                   ) : !turn.answer ? (
                     <p className="flex items-center gap-2 px-1 py-2 text-xs text-muted">
-                      <Spinner /> querying the graph...
+                      <Spinner /> Querying graph...
                     </p>
                   ) : (
                     <Answer res={turn.answer} onPick={selectNode} />
@@ -170,7 +170,7 @@ export function AskTwin({
               placeholder="Which components write to the BATCH table?"
               className="input max-h-28 min-h-[44px] resize-none py-2.5 px-3 border-line shadow-xs text-xs sm:text-sm" />
             <button type="submit" disabled={ask.isPending || !draft.trim()}
-              className="btn-primary h-11 w-11 shrink-0 p-0 flex items-center justify-center rounded-lg shadow-sm" aria-label="Ask">
+              className="btn-primary h-11 w-11 shrink-0 p-0 flex items-center justify-center rounded-lg shadow-sm" aria-label="Send query">
               {ask.isPending ? <Spinner className="text-white" /> : <CornerDownLeft className="h-4 w-4" />}
             </button>
           </div>

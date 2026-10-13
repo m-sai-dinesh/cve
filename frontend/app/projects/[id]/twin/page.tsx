@@ -3,7 +3,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   Activity, ArrowRight, Code2, Database, Eye, FileCode2, GitFork,
-  Layers, Network, Play, Search, ShieldAlert, Sparkles, Terminal, X,
+  Layers, Network, Play, Search, ShieldAlert, Terminal, X,
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import React from "react";
@@ -107,7 +107,7 @@ export default function TwinPage() {
               onClick={() => setChatOpen(true)}
               className="btn-outline text-xs min-h-[38px] shadow-sm"
             >
-              <Sparkles className="h-3.5 w-3.5 text-accent" /> Ask the Twin
+              <Search className="h-3.5 w-3.5 text-muted" /> Query Twin
             </button>
             <div className="flex rounded-lg border border-line bg-surface p-1 shadow-sm">
               <button

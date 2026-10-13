@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  ArrowRight, Clock, Cloud, FileCode2, Plus, Trash2, Upload, Zap,
+  ArrowRight, Clock, Cloud, FileCode2, Plus, Trash2, Upload,
 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
@@ -30,7 +30,7 @@ export default function ProjectsPage() {
     <>
       <PageHeader
         kicker="Pharma IT / Cloud"
-        title="AI-Powered Application Modernization Advisor"
+        title="Application Modernization Advisor"
         subtitle="Legacy pharma applications are difficult to maintain, scale, and migrate. Organizations struggle to assess modernization opportunities and cloud readiness efficiently."
         actions={
           <button onClick={() => setWizard(true)} className="btn-primary">
@@ -41,60 +41,60 @@ export default function ProjectsPage() {
 
       {/* Core Mission: Objectives & Expected Outcomes Showcase */}
       <div className="mb-6 grid gap-4 lg:grid-cols-2">
-        <div className="rounded-xl border border-line bg-surface/90 p-5 shadow-card">
+        <div className="rounded-xl border border-line bg-surface p-5 shadow-sm">
           <div className="mb-3.5 flex items-center justify-between">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-accent">5 Core Objectives</h3>
-            <span className="rounded-full bg-accent/15 px-2.5 py-0.5 text-2xs font-semibold text-accent">Mission</span>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-accent">5 Core Objectives</h3>
+            <span className="rounded-md bg-accent/10 px-2 py-0.5 text-2xs font-semibold text-accent">Mission</span>
           </div>
           <ol className="space-y-2.5 text-xs text-ink/90">
             <li className="flex items-start gap-2">
-              <span className="font-bold text-accent">1.</span>
+              <span className="font-semibold text-accent">1.</span>
               <span><strong>Analyze existing architectures:</strong> Parse code, DDL, config & runtime calls into a queryable Living Twin.</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="font-bold text-accent">2.</span>
+              <span className="font-semibold text-accent">2.</span>
               <span><strong>Evaluate cloud readiness:</strong> Score components across 11 architectural & 12-factor dimensions.</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="font-bold text-accent">3.</span>
+              <span className="font-semibold text-accent">3.</span>
               <span><strong>Identify modernization risks:</strong> Tag GxP regulatory criticality & flag dead code quick wins.</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="font-bold text-accent">4.</span>
+              <span className="font-semibold text-accent">4.</span>
               <span><strong>Recommend target architecture:</strong> Propose bounded contexts (Strangler Fig, Event-Driven, Microservices).</span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="font-bold text-accent">5.</span>
+              <span className="font-semibold text-accent">5.</span>
               <span><strong>Generate migration roadmaps:</strong> Optimize wave schedules with GxP freeze windows & Monte Carlo simulations.</span>
             </li>
           </ol>
         </div>
 
-        <div className="rounded-xl border border-line bg-surface/90 p-5 shadow-card">
+        <div className="rounded-xl border border-line bg-surface p-5 shadow-sm">
           <div className="mb-3.5 flex items-center justify-between">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-low">5 Expected Outcomes</h3>
-            <span className="rounded-full bg-low/15 px-2.5 py-0.5 text-2xs font-semibold text-low">Target Impact</span>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-low">5 Expected Outcomes</h3>
+            <span className="rounded-md bg-low/10 px-2 py-0.5 text-2xs font-semibold text-low">Target Impact</span>
           </div>
           <ul className="space-y-2.5 text-xs text-ink/90">
-            <li className="flex items-center gap-2">
-              <span className="grid h-5 w-5 shrink-0 place-items-center rounded bg-low/15 text-xs font-bold text-low">⚡</span>
-              <span><strong>1. Faster architecture assessments:</strong> Automated repository analysis in seconds.</span>
+            <li className="flex items-center gap-2.5">
+              <span className="grid h-5 w-5 shrink-0 place-items-center rounded bg-low/10 text-2xs font-semibold text-low">1</span>
+              <span><strong>Faster architecture assessments:</strong> Automated repository analysis in seconds.</span>
             </li>
-            <li className="flex items-center gap-2">
-              <span className="grid h-5 w-5 shrink-0 place-items-center rounded bg-low/15 text-xs font-bold text-low">🧭</span>
-              <span><strong>2. Clear migration strategy:</strong> 7R recommendations with PERT effort estimates.</span>
+            <li className="flex items-center gap-2.5">
+              <span className="grid h-5 w-5 shrink-0 place-items-center rounded bg-low/10 text-2xs font-semibold text-low">2</span>
+              <span><strong>Clear migration strategy:</strong> 7R recommendations with PERT effort estimates.</span>
             </li>
-            <li className="flex items-center gap-2">
-              <span className="grid h-5 w-5 shrink-0 place-items-center rounded bg-low/15 text-xs font-bold text-low">🛡️</span>
-              <span><strong>3. Reduced transformation risk:</strong> Blast-radius optimization cuts re-validation scope.</span>
+            <li className="flex items-center gap-2.5">
+              <span className="grid h-5 w-5 shrink-0 place-items-center rounded bg-low/10 text-2xs font-semibold text-low">3</span>
+              <span><strong>Reduced transformation risk:</strong> Blast-radius optimization cuts re-validation scope.</span>
             </li>
-            <li className="flex items-center gap-2">
-              <span className="grid h-5 w-5 shrink-0 place-items-center rounded bg-low/15 text-xs font-bold text-low">📈</span>
-              <span><strong>4. Improved scalability & maintainability:</strong> Lower inter-service coupling & modularity.</span>
+            <li className="flex items-center gap-2.5">
+              <span className="grid h-5 w-5 shrink-0 place-items-center rounded bg-low/10 text-2xs font-semibold text-low">4</span>
+              <span><strong>Improved scalability & maintainability:</strong> Lower inter-service coupling & modularity.</span>
             </li>
-            <li className="flex items-center gap-2">
-              <span className="grid h-5 w-5 shrink-0 place-items-center rounded bg-low/15 text-xs font-bold text-low">☁️</span>
-              <span><strong>5. Accelerated cloud adoption:</strong> Actionable wave roadmap with FDA CSA assurance evidence.</span>
+            <li className="flex items-center gap-2.5">
+              <span className="grid h-5 w-5 shrink-0 place-items-center rounded bg-low/10 text-2xs font-semibold text-low">5</span>
+              <span><strong>Accelerated cloud adoption:</strong> Actionable wave roadmap with FDA CSA assurance evidence.</span>
             </li>
           </ul>
         </div>
@@ -148,8 +148,8 @@ function ProjectCard({ project: p, onDelete }: { project: Project; onDelete: () 
   const running = p.status === "analyzing";
 
   return (
-    <article className="card group flex flex-col overflow-hidden border-line transition-all duration-200 hover:shadow-pop">
-      <div className="flex items-start justify-between gap-3 border-b border-line bg-surface/80 p-5 pb-4">
+    <article className="card group flex flex-col overflow-hidden border-line transition-shadow duration-150 hover:shadow-card">
+      <div className="flex items-start justify-between gap-3 border-b border-line bg-surface p-5 pb-4">
         <div className="min-w-0">
           <Link href={`/projects/${p.id}/overview`}
             className="block truncate text-base font-bold tracking-tight hover:text-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 rounded">
@@ -331,8 +331,8 @@ function NewAssessment({ open, onClose }: { open: boolean; onClose: () => void }
           <button onClick={onClose} className="btn-outline">Cancel</button>
           <button className="btn-primary" disabled={!ready || create.isPending}
             onClick={() => { setError(""); create.mutate(); }}>
-            {create.isPending ? <Spinner /> : <Zap className="h-4 w-4" />}
-            Create and analyse
+            {create.isPending ? <Spinner /> : <ArrowRight className="h-4 w-4" />}
+            Create and analyze
           </button>
         </>
       }>

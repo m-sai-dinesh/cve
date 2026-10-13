@@ -69,12 +69,12 @@ export function PageHeader({
     <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
       <div className="min-w-0">
         {kicker && (
-          <div className="mb-1.5 text-2xs font-bold uppercase tracking-widest text-accent">
+          <div className="mb-1 text-2xs font-semibold uppercase tracking-wider text-accent">
             {kicker}
           </div>
         )}
-        <h1 className="text-xl font-extrabold tracking-tight sm:text-2xl lg:text-3xl">{title}</h1>
-        {subtitle && <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted">{subtitle}</p>}
+        <h1 className="text-xl font-bold tracking-tight sm:text-2xl">{title}</h1>
+        {subtitle && <p className="mt-1 max-w-3xl text-sm leading-relaxed text-muted">{subtitle}</p>}
       </div>
       {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
     </div>
@@ -88,9 +88,9 @@ export function Card({
   children: React.ReactNode; className?: string; bodyClass?: string; dense?: boolean;
 }) {
   return (
-    <section className={cn("card overflow-hidden transition-shadow duration-200 border-line/90", className)}>
+    <section className={cn("card overflow-hidden transition-shadow duration-150 border-line/90", className)}>
       {(title || actions) && (
-        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-surface/90 px-5 py-3.5">
+        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-surface px-5 py-3.5">
           <div className="min-w-0">
             {title && <h2 className="text-sm font-semibold tracking-tight">{title}</h2>}
             {subtitle && <p className="mt-0.5 text-xs text-muted">{subtitle}</p>}
@@ -120,7 +120,7 @@ export function Kpi({
         {icon && <span className="text-faint transition-colors group-hover:text-muted">{icon}</span>}
       </div>
       <div className="flex items-baseline gap-1.5">
-        <span className={cn("kpi text-2xl sm:text-3xl font-extrabold tracking-tight", toneClass)}>{value}</span>
+        <span className={cn("kpi text-2xl font-bold tracking-tight", toneClass)}>{value}</span>
         {unit && <span className="text-xs font-medium text-muted">{unit}</span>}
         {trend && (
           <span className={cn("ml-1 text-xs font-semibold",
@@ -140,10 +140,10 @@ export function Meter({
   const pctVal = Math.max(0, Math.min(100, (value / max) * 100));
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-raised/90 border border-line/40"
+      <div className="h-2 w-full overflow-hidden rounded bg-raised border border-line/40"
            role="meter" aria-valuenow={value} aria-valuemin={0} aria-valuemax={max}
            aria-label={label ?? "score"}>
-        <div className={cn("h-full rounded-full transition-all duration-300 ease-out", readinessBar(value))}
+        <div className={cn("h-full rounded transition-all duration-200 ease-out", readinessBar(value))}
              style={{ width: `${pctVal}%` }} />
       </div>
       <span className={cn("w-9 shrink-0 text-right text-xs font-semibold tabular-nums",
@@ -169,10 +169,7 @@ export function Loading({ label = "Loading", rows = 3 }: { label?: string; rows?
         <Spinner /> {label}...
       </div>
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="relative h-12 overflow-hidden rounded-lg bg-raised">
-          <div className="absolute inset-0 -translate-x-full animate-shimmer
-                          bg-gradient-to-r from-transparent via-surface/70 to-transparent" />
-        </div>
+        <div key={i} className="h-10 rounded-lg bg-raised animate-pulse" />
       ))}
     </div>
   );
@@ -313,11 +310,11 @@ export function Modal({
       {open && (
         <motion.div className="fixed inset-0 z-50 flex items-center justify-center p-4"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" onClick={onClose} />
+          <div className="absolute inset-0 bg-black/50 transition-opacity" onClick={onClose} />
           <motion.div role="dialog" aria-modal="true"
-            initial={{ scale: 0.96, y: 8 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.97 }}
-            transition={{ duration: 0.16 }}
-            className={cn("card relative z-10 flex max-h-[88vh] w-full flex-col shadow-pop border-line rounded-2xl",
+            initial={{ scale: 0.98, y: 4 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.98 }}
+            transition={{ duration: 0.15 }}
+            className={cn("card relative z-10 flex max-h-[88vh] w-full flex-col shadow-lg border-line rounded-xl",
               wide ? "max-w-3xl" : "max-w-lg")}>
             <header className="flex items-center justify-between gap-3 border-b border-line px-5 py-4">
               <h2 className="text-sm font-semibold tracking-tight">{title}</h2>
@@ -349,11 +346,11 @@ export function Drawer({
       {open && (
         <motion.div className="fixed inset-0 z-40 flex justify-end"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] transition-opacity" onClick={onClose} />
+          <div className="absolute inset-0 bg-black/40 transition-opacity" onClick={onClose} />
           <motion.aside
             initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 360, damping: 34 }}
-            className={cn("relative z-10 flex h-full w-full flex-col border-l border-line bg-surface shadow-pop",
+            className={cn("relative z-10 flex h-full w-full flex-col border-l border-line bg-surface shadow-lg",
               width)}>
             <header className="flex items-start justify-between gap-3 border-b border-line px-5 py-4">
               <div className="min-w-0">
@@ -378,7 +375,7 @@ export function Tip({ text, children }: { text: string; children: React.ReactNod
       {children}
       <span className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-1.5
                        w-max max-w-xs -translate-x-1/2 rounded-md border border-line bg-surface px-2.5 py-1.5
-                       text-2xs leading-snug text-muted opacity-0 shadow-pop transition-opacity
+                       text-2xs leading-snug text-muted opacity-0 shadow-md transition-opacity
                        group-hover/tip:opacity-100">
         {text}
       </span>
@@ -405,10 +402,10 @@ export function ProgressBar({
         <span className="min-w-0 truncate text-muted">{label}</span>
         <span className="shrink-0 font-semibold tabular-nums">{p.toFixed(0)}%</span>
       </div>
-      <div className="h-1.5 overflow-hidden rounded-full bg-raised">
-        <motion.div className={cn("h-full rounded-full", failed ? "bg-high" : "bg-accent")}
+      <div className="h-1.5 overflow-hidden rounded bg-raised">
+        <motion.div className={cn("h-full rounded", failed ? "bg-high" : "bg-accent")}
           initial={{ width: 0 }} animate={{ width: `${p}%` }}
-          transition={{ duration: 0.35, ease: "easeOut" }} />
+          transition={{ duration: 0.25, ease: "easeOut" }} />
       </div>
     </div>
   );
@@ -419,7 +416,7 @@ export function CopyText({ text, className }: { text: string; className?: string
   const [done, setDone] = React.useState(false);
   return (
     <button
-      className={cn("mono inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 border border-line/50 bg-raised/50 hover:bg-raised transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 active:scale-[0.98]", className)}
+      className={cn("mono inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 border border-line/50 bg-raised/50 hover:bg-raised transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40", className)}
       title={`${text} - click to copy`}
       onClick={async () => {
         try {

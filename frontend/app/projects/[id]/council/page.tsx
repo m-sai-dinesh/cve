@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle, Bot, Check, CheckCircle2, ChevronDown, Clock,
   FileCheck2, GitBranch, Layers, MessageSquare, MessagesSquare, Play,
-  RefreshCw, ShieldAlert, Sparkles, UserCheck, UserRound, Users, X, XCircle,
+  RefreshCw, ShieldAlert, UserCheck, UserRound, Users, X, XCircle,
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import React from "react";
@@ -21,37 +21,37 @@ const AGENT_ROLES = [
   {
     name: "Cloud Architect",
     role: "Scalability & Managed Services",
-    avatar: "🏗️",
+    code: "ARCH",
     focus: "Containerization, event-driven queues, serverless, Strangler Fig facades",
   },
   {
     name: "QA & Validation Lead",
     role: "Data Integrity & CSA Assurance",
-    avatar: "🛡️",
+    code: "QA",
     focus: "Minimizing re-validation scope, Part 11 electronic records, risk scaling",
   },
   {
     name: "Security Officer",
     role: "Zero Trust & IAM Compliance",
-    avatar: "🔒",
+    code: "SEC",
     focus: "Secret rotation, RBAC role tables, encrypted audit trails, network isolation",
   },
   {
     name: "FinOps Analyst",
     role: "Cloud Cost & Modernization ROI",
-    avatar: "💰",
+    code: "FIN",
     focus: "Rehosting quick wins, eliminating dead code licensing, managed DB TCO",
   },
   {
     name: "Regulatory Affairs",
     role: "Part 11 / Annex 11 Oversight",
-    avatar: "⚖️",
+    code: "REG",
     focus: "Cloud vendor qualification, data residency, software assurance traceability",
   },
   {
     name: "Moderator (Chair)",
     role: "Consensus Synthesis & Dissent Record",
-    avatar: "🏛️",
+    code: "MOD",
     focus: "Forces evidence citation, synthesizes majority verdict, records dissent",
   },
 ];
@@ -218,8 +218,10 @@ export default function CouncilPage() {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {AGENT_ROLES.map((agent) => (
             <div key={agent.name} className="rounded-xl border bg-raised/30 p-3.5 space-y-1.5 text-xs">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">{agent.avatar}</span>
+              <div className="flex items-center gap-2.5">
+                <span className="grid h-7 w-7 shrink-0 place-items-center rounded border border-line bg-raised font-mono text-2xs font-bold text-accent">
+                  {agent.code}
+                </span>
                 <div>
                   <h4 className="font-bold text-ink">{agent.name}</h4>
                   <span className="text-3xs font-semibold text-accent uppercase tracking-wider block">

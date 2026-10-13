@@ -282,7 +282,7 @@ export function TwinCytoscape({
       <div ref={containerRef} className="h-full w-full min-h-[500px]" />
 
       {/* Floating Canvas Controls */}
-      <div className="absolute bottom-4 right-4 flex items-center gap-1 rounded-lg border border-line bg-surface/95 p-1 shadow-card backdrop-blur-sm">
+      <div className="absolute bottom-4 right-4 flex items-center gap-1 rounded-lg border border-line bg-surface p-1 shadow-sm">
         <button
           onClick={handleZoomIn}
           className="btn-ghost p-2 rounded-lg text-muted hover:text-ink min-h-[34px] min-w-[34px] flex items-center justify-center focus-visible:ring-2 focus-visible:ring-accent/40"
@@ -318,7 +318,7 @@ export function TwinCytoscape({
       </div>
 
       {/* Legend overlay */}
-      <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2 rounded-lg border border-line bg-surface/95 px-3 py-1.5 text-2xs text-muted shadow-sm backdrop-blur-sm">
+      <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2 rounded-lg border border-line bg-surface px-3 py-1.5 text-2xs text-muted shadow-sm">
         <span className="font-semibold text-ink">Legend:</span>
         <span className="flex items-center gap-1">
           <span className="h-2 w-2 rounded-full bg-high" /> High GxP

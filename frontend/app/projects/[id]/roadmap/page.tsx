@@ -3,8 +3,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertCircle, ArrowRight, Calendar, CalendarRange, Check,
-  Clock, Flame, HelpCircle, Layers, Play, RefreshCw, Sliders,
-  Sparkles, TrendingUp, Users,
+  Clock, HelpCircle, Layers, Play, RefreshCw, Sliders,
+  TrendingUp, Users,
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import React from "react";
@@ -153,7 +153,7 @@ export default function RoadmapPage() {
           value={num(activeSched.critical_path?.length ?? 0)}
           tone="high"
           hint="Tasks driving delivery timeline"
-          icon={<Flame className="h-4 w-4" />}
+          icon={<Clock className="h-4 w-4" />}
         />
       </div>
 
@@ -430,7 +430,7 @@ export default function RoadmapPage() {
                   disabled={whatifMutation.isPending}
                   className="btn-primary text-xs"
                 >
-                  {whatifMutation.isPending ? <Spinner /> : <Sparkles className="h-3.5 w-3.5" />}
+                  {whatifMutation.isPending ? <Spinner /> : <Sliders className="h-3.5 w-3.5" />}
                   Simulate What-If Scenario
                 </button>
               </div>

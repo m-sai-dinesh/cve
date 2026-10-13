@@ -96,10 +96,9 @@ body {
   }
   .btn {
     @apply inline-flex items-center justify-center gap-2 rounded-lg border px-3.5 py-2
-           text-sm font-medium transition-all duration-150 ease-out select-none
-           active:scale-[0.98] motion-reduce:transform-none motion-reduce:transition-none
+           text-sm font-medium transition-colors duration-150 ease-out select-none
            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2
-           disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100;
+           disabled:cursor-not-allowed disabled:opacity-50;
   }
   .btn-ghost {
     @apply btn border-transparent text-muted hover:bg-raised hover:text-ink;
@@ -124,7 +123,7 @@ body {
     @apply mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted;
   }
   .chip {
-    @apply inline-flex items-center gap-1 rounded-full border px-2 py-0.5
+    @apply inline-flex items-center gap-1 rounded-md border px-2 py-0.5
            text-2xs font-semibold;
   }
   .kpi {
@@ -163,8 +162,7 @@ body {
 
 /* ------------------------------------------------------------ cytoscape host */
 .cy-host {
-  background-image: radial-gradient(rgb(var(--line) / 0.55) 1px, transparent 1px);
-  background-size: 22px 22px;
+  @apply bg-surface;
 }
 
 /* Mermaid renders inline SVG; keep it from overflowing its card. */

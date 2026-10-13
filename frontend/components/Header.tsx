@@ -40,14 +40,14 @@ export function Header() {
   const llm = health.data?.llm;
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-surface/85 backdrop-blur-md">
+    <header className="sticky top-0 z-30 border-b border-line bg-surface">
       <div className="mx-auto flex h-14 w-full max-w-[1600px] items-center gap-3 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex shrink-0 items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40">
           <span className="grid h-8 w-8 place-items-center rounded-lg bg-accent text-white shadow-sm">
             <ShieldCheck className="h-4.5 w-4.5" strokeWidth={2.4} />
           </span>
           <span className="hidden sm:block">
-            <span className="block text-sm font-extrabold leading-tight tracking-tight">ModernRx</span>
+            <span className="block text-sm font-bold leading-tight tracking-tight">ModernRx</span>
             <span className="block text-[0.625rem] font-medium leading-tight text-muted">
               Pharma IT / Cloud Advisor
             </span>
@@ -81,8 +81,8 @@ export function Header() {
         </button>
 
         {/* Unified Modernization Lead profile */}
-        <div className="flex items-center gap-2 rounded-full border border-line bg-raised/70 px-3 py-1.5 text-xs shadow-sm">
-          <span className="grid h-6 w-6 place-items-center rounded-full bg-accent/20 text-[0.625rem] font-bold text-accent">
+        <div className="flex items-center gap-2 rounded-lg border border-line bg-raised px-2.5 py-1 text-xs">
+          <span className="grid h-6 w-6 place-items-center rounded bg-accent/15 text-[0.625rem] font-bold text-accent">
             ML
           </span>
           <div className="hidden sm:block text-left">

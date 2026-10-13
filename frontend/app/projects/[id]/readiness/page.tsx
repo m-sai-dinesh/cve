@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   AlertCircle, AlertTriangle, ArrowRight, CheckCircle2, ChevronDown,
-  Gauge, Info, Layers, RefreshCw, Search, ShieldAlert, Sparkles, Trash2, Zap,
+  Gauge, Info, Layers, RefreshCw, Search, ShieldAlert,
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import React from "react";
@@ -103,7 +103,7 @@ export default function ReadinessPage() {
           label="Opportunities"
           value={num(data.opportunities.length)}
           hint={`${num(s.quick_wins)} quick wins identified`}
-          icon={<Sparkles className="h-4 w-4" />}
+          icon={<Layers className="h-4 w-4" />}
         />
       </div>
 
@@ -128,7 +128,7 @@ export default function ReadinessPage() {
           className={cn("rounded-md px-3.5 py-1.5 text-xs font-semibold transition-colors",
             activeTab === "opportunities" ? "bg-accent text-white" : "text-muted hover:text-ink")}
         >
-          <Sparkles className="mr-1.5 inline h-3.5 w-3.5" /> Modernization Opportunities ({data.opportunities.length})
+          <Layers className="mr-1.5 inline h-3.5 w-3.5" /> Modernization Opportunities ({data.opportunities.length})
         </button>
       </div>
 
@@ -304,7 +304,7 @@ export default function ReadinessPage() {
                   <div className="flex items-center gap-2">
                     {opp.kind === "dead_code" && (
                       <span className="chip border-high/35 bg-high-soft text-high text-2xs font-semibold">
-                        <Trash2 className="h-3 w-3 mr-1 inline" /> Dead Code
+                        <AlertTriangle className="h-3 w-3 mr-1 inline" /> Dead Code
                       </span>
                     )}
                     {opp.kind === "duplicate_logic" && (
@@ -314,7 +314,7 @@ export default function ReadinessPage() {
                     )}
                     {opp.kind === "quick_win" && (
                       <span className="chip border-low/35 bg-low-soft text-low text-2xs font-semibold">
-                        <Zap className="h-3 w-3 mr-1 inline" /> Quick Win
+                        <CheckCircle2 className="h-3 w-3 mr-1 inline" /> Quick Win
                       </span>
                     )}
                     <span className="font-bold text-sm text-ink truncate">{opp.title}</span>

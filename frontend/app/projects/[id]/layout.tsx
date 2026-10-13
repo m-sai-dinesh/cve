@@ -63,8 +63,8 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
           </p>
           {p?.status === "analyzing" && (
             <p className="mt-2.5 flex items-center gap-1.5 text-2xs font-semibold text-accent">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
-              analysing
+              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+              Analyzing
             </p>
           )}
         </div>
@@ -111,7 +111,7 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
 
         <button onClick={() => setChatOpen(true)}
           className="btn-outline mt-3 w-full justify-start py-2.5 px-3 text-xs font-semibold shadow-sm hover:border-accent/40">
-          <MessageCircleQuestion className="h-4 w-4 text-accent" /> Ask the Twin
+          <MessageCircleQuestion className="h-4 w-4 text-muted" /> Architecture Query
         </button>
       </nav>
 

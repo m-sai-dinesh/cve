@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle, Check, CheckCircle2, Download, Eye, FileCheck2,
-  FileText, Layers, Play, RefreshCw, ShieldCheck, Sparkles, Table,
+  FileCode2, FileText, Layers, Play, RefreshCw, ShieldCheck, Table,
 } from "lucide-react";
 import { useParams } from "next/navigation";
 import React from "react";
@@ -144,7 +144,7 @@ export default function EvidencePage() {
           className={cn("rounded-md px-3.5 py-1.5 text-xs font-semibold transition-all duration-150 focus-visible:ring-2 focus-visible:ring-accent/40",
             activeTab === "tests" ? "bg-accent text-white shadow-xs" : "text-muted hover:text-ink")}
         >
-          <Sparkles className="mr-1.5 inline h-3.5 w-3.5" /> Characterization &amp; Shadow Tests
+          <FileCode2 className="mr-1.5 inline h-3.5 w-3.5" /> Characterization &amp; Shadow Tests
         </button>
         <button
           onClick={() => setActiveTab("migration")}
