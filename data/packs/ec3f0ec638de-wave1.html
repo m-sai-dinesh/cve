@@ -69,10 +69,10 @@
   <p class="sub">Wave 1 - Quick wins</p>
 
   <div class="meta">
-    <div><dt>Generated</dt><dd>2026-10-13T07:04:03+00:00</dd></div>
+    <div><dt>Generated</dt><dd>2026-10-13T09:22:30+00:00</dd></div>
     <div><dt>Target cloud</dt><dd>AWS</dd></div>
     <div><dt>Wave window</dt><dd>2026-11-24 &rarr; 2026-12-22</dd></div>
-    <div><dt>Components in scope</dt><dd>7</dd></div>
+    <div><dt>Components in scope</dt><dd>15</dd></div>
     <div><dt>Status</dt><dd style="color:var(--med)">DRAFT &mdash; requires QA review</dd></div>
   </div>
 
@@ -149,38 +149,38 @@
   <h3>Container diagram (C4 level 2)</h3>
   <pre>graph TB
     user["Lab user"]
-    c_cluster_0["Audit Sample<br/><i>9 classes &middot; GxP HIGH &middot; readiness 65</i>"]
-    class c_cluster_0 high
-    user --> c_cluster_0
-    c_cluster_5["Batch Product<br/><i>2 classes &middot; GxP MEDIUM &middot; readiness 77</i>"]
-    class c_cluster_5 medium
-    c_cluster_2["Batch Release<br/><i>5 classes &middot; GxP HIGH &middot; readiness 75</i>"]
-    class c_cluster_2 high
-    user --> c_cluster_2
-    c_cluster_3["Coa Report<br/><i>4 classes &middot; GxP MEDIUM &middot; readiness 72</i>"]
+    c_cluster_7["API Facade - Result Sample<br/><i>2 classes &middot; GxP MEDIUM &middot; readiness 69</i>"]
+    class c_cluster_7 medium
+    user --> c_cluster_7
+    c_cluster_6["Coa Report<br/><i>2 classes &middot; GxP MEDIUM &middot; readiness 66</i>"]
+    class c_cluster_6 medium
+    user --> c_cluster_6
+    c_cluster_5["Import Instrument<br/><i>2 classes &middot; GxP HIGH &middot; readiness 49</i>"]
+    class c_cluster_5 high
+    c_cluster_3["Lims User<br/><i>4 classes &middot; GxP MEDIUM &middot; readiness 72</i>"]
     class c_cluster_3 medium
     user --> c_cluster_3
-    c_cluster_4["Csv File<br/><i>2 classes &middot; GxP LOW &middot; readiness 82</i>"]
-    class c_cluster_4 low
-    c_cluster_7["Date<br/><i>2 classes &middot; GxP MEDIUM &middot; readiness 87</i>"]
-    class c_cluster_7 medium
-    c_cluster_8["Excel Exporter<br/><i>1 classes &middot; GxP LOW &middot; readiness 86</i>"]
+    c_cluster_0["Result Sample<br/><i>10 classes &middot; GxP HIGH &middot; readiness 68</i>"]
+    class c_cluster_0 high
+    user --> c_cluster_0
+    c_cluster_2["Shared Data Types - Batch Sample<br/><i>4 classes &middot; GxP MEDIUM &middot; readiness 77</i>"]
+    class c_cluster_2 medium
+    c_cluster_1["Shared Data Types - Test Result<br/><i>6 classes &middot; GxP MEDIUM &middot; readiness 78</i>"]
+    class c_cluster_1 medium
+    c_cluster_4["Shared Utilities - Check Csv<br/><i>4 classes &middot; GxP MEDIUM &middot; readiness 85</i>"]
+    class c_cluster_4 medium
+    c_cluster_8["Shared Utilities - Excel Exporter<br/><i>1 classes &middot; GxP LOW &middot; readiness 86</i>"]
     class c_cluster_8 low
-    c_cluster_1["Result Specification<br/><i>8 classes &middot; GxP HIGH &middot; readiness 69</i>"]
-    class c_cluster_1 high
-    user --> c_cluster_1
-    c_cluster_6["Result Test<br/><i>2 classes &middot; GxP MEDIUM &middot; readiness 77</i>"]
-    class c_cluster_6 medium
-    c_cluster_2 --> c_cluster_1
-    c_cluster_2 --> c_cluster_0
-    c_cluster_2 --> c_cluster_5
-    c_cluster_0 --> c_cluster_4
-    c_cluster_0 --> c_cluster_1
-    c_cluster_0 --> c_cluster_7
+    c_cluster_3 --> c_cluster_0
     c_cluster_1 --> c_cluster_0
-    c_cluster_1 --> c_cluster_6
+    c_cluster_0 --> c_cluster_1
+    c_cluster_0 --> c_cluster_4
     c_cluster_0 --> c_cluster_2
-    c_cluster_8 --> c_cluster_7
+    c_cluster_5 --> c_cluster_4
+    c_cluster_5 --> c_cluster_0
+    c_cluster_5 --> c_cluster_1
+    c_cluster_7 --> c_cluster_0
+    c_cluster_8 --> c_cluster_4
     t_AUDIT_TRAIL[("AUDIT_TRAIL<br/><i>regulated</i>")]
     class t_AUDIT_TRAIL store
     t_BATCH[("BATCH<br/><i>regulated</i>")]
@@ -218,12 +218,18 @@
 </pre>
 
   <h2>2. Intended use and GxP impact</h2>
-  <p>7 component(s) in scope: 0 HIGH, 3 MEDIUM, 4 LOW. Under a risk-based approach 0 of 7 (0%) require scripted testing with independent review; the remainder are covered by exploratory testing with recorded results or by automated and vendor evidence.</p>
+  <p>15 component(s) in scope: 0 HIGH, 7 MEDIUM, 8 LOW. Under a risk-based approach 0 of 15 (0%) require scripted testing with independent review; the remainder are covered by exploratory testing with recorded results or by automated and vendor evidence.</p>
 
   <h3>Intended use per component</h3>
   <table>
     <thead><tr><th>Component</th><th>Tier</th><th>Tags</th><th>Intended use</th></tr></thead>
     <tbody>
+      <tr>
+        <td><code>AuditEntryMapper</code></td>
+        <td class="tier MEDIUM">MEDIUM</td>
+        <td style="font-size:11px">DATA_INTEGRITY</td>
+        <td>AuditEntryMapper provides supporting logic with no GxP data path.</td>
+      </tr>
       <tr>
         <td><code>ProductBatch</code></td>
         <td class="tier MEDIUM">MEDIUM</td>
@@ -235,6 +241,24 @@
         <td class="tier MEDIUM">MEDIUM</td>
         <td style="font-size:11px">DATA_INTEGRITY</td>
         <td>TestResult provides supporting logic with no GxP data path.</td>
+      </tr>
+      <tr>
+        <td><code>TestSpecification</code></td>
+        <td class="tier MEDIUM">MEDIUM</td>
+        <td style="font-size:11px">DATA_INTEGRITY</td>
+        <td>TestSpecification provides supporting logic with no GxP data path.</td>
+      </tr>
+      <tr>
+        <td><code>SignatureMapper</code></td>
+        <td class="tier MEDIUM">MEDIUM</td>
+        <td style="font-size:11px">DATA_INTEGRITY</td>
+        <td>SignatureMapper provides supporting logic with no GxP data path.</td>
+      </tr>
+      <tr>
+        <td><code>Sample</code></td>
+        <td class="tier MEDIUM">MEDIUM</td>
+        <td style="font-size:11px">DATA_INTEGRITY</td>
+        <td>Sample provides supporting logic with no GxP data path.</td>
       </tr>
       <tr>
         <td><code>DateHelper</code></td>
@@ -249,10 +273,34 @@
         <td>BatchMapper provides supporting logic with no GxP data path.</td>
       </tr>
       <tr>
+        <td><code>ReleaseCheck</code></td>
+        <td class="tier LOW">LOW</td>
+        <td style="font-size:11px"></td>
+        <td>ReleaseCheck provides supporting logic with no GxP data path.</td>
+      </tr>
+      <tr>
+        <td><code>CsvFileFilter</code></td>
+        <td class="tier LOW">LOW</td>
+        <td style="font-size:11px"></td>
+        <td>CsvFileFilter provides supporting logic with no GxP data path.</td>
+      </tr>
+      <tr>
+        <td><code>InstrumentReading</code></td>
+        <td class="tier LOW">LOW</td>
+        <td style="font-size:11px"></td>
+        <td>InstrumentReading provides supporting logic with no GxP data path.</td>
+      </tr>
+      <tr>
         <td><code>TestResultMapper</code></td>
         <td class="tier LOW">LOW</td>
         <td style="font-size:11px"></td>
         <td>TestResultMapper provides supporting logic with no GxP data path.</td>
+      </tr>
+      <tr>
+        <td><code>SampleMapper</code></td>
+        <td class="tier LOW">LOW</td>
+        <td style="font-size:11px"></td>
+        <td>SampleMapper provides supporting logic with no GxP data path.</td>
       </tr>
       <tr>
         <td><code>LegacyExcelExporter</code></td>
@@ -355,13 +403,13 @@
 
   <h2>3. Risk-based assurance plan (CSA)</h2>
   <p>Computer Software Assurance scales assurance effort to risk rather than
-  documenting everything equally. Of 7 component(s)
+  documenting everything equally. Of 15 component(s)
   in this wave, <strong>0</strong> require scripted
   testing with independent review
   (0.0% of the wave).</p>
 
     <h3><span class="tier MEDIUM">MEDIUM tier</span> &mdash; Unscripted / exploratory testing with recorded results
-      (3 components)</h3>
+      (7 components)</h3>
     <p>These components read GxP data or enforce access control. A failure is serious but does not directly alter a regulated record, so CSA permits a lighter, more efficient approach.</p>
     <h4>Activities</h4>
     <ul><li>Exploratory testing of the main flows against documented intended use</li><li>Recorded results for each session: who tested, what was exercised, what happened</li><li>Verification that read models agree with the source of record</li><li>Access-control testing: each role sees and does only what it should</li><li>Automated regression suite execution</li></ul>
@@ -371,7 +419,7 @@
       <strong>Reviewer:</strong> System owner, with QA review of the summary &nbsp;|&nbsp;
       <strong>Approval:</strong> System owner approval; QA notified</p>
     <h3><span class="tier LOW">LOW tier</span> &mdash; Vendor and automated evidence with ad-hoc testing
-      (4 components)</h3>
+      (8 components)</h3>
     <p>No GxP data path. CSA explicitly permits leveraging vendor documentation and automated evidence here, and spending the saved effort on the high-risk components instead.</p>
     <h4>Activities</h4>
     <ul><li>Automated build, unit and integration tests in the qualified pipeline</li><li>Smoke testing after deployment</li><li>Vendor/platform documentation reviewed and retained for managed services</li></ul>
@@ -383,7 +431,7 @@
 
 
   <h2>4. Characterisation tests</h2>
-  <p>5 of 7 class(es) have a generated characterisation test, including 0 of 0 HIGH-tier class(es). These are skeletons with the expected values left as placeholders: the values must be captured from the legacy system, because only the legacy system knows what the current behaviour is. Method selection is driven by observed runtime calls, so the busiest and most critical paths are covered first.</p>
+  <p>7 of 15 class(es) have a generated characterisation test, including 0 of 0 HIGH-tier class(es). These are skeletons with the expected values left as placeholders: the values must be captured from the legacy system, because only the legacy system knows what the current behaviour is. Method selection is driven by observed runtime calls, so the busiest and most critical paths are covered first.</p>
   <table>
     <thead><tr><th>Artefact</th><th>Kind</th><th>Tier</th><th>Why this artefact</th></tr></thead>
     <tbody>
@@ -392,20 +440,28 @@
         <td class="tier MEDIUM">MEDIUM</td><td>DateHelper is GxP MEDIUM; 254 observed calls make its current behaviour the baseline the migration must preserve.</td>
       </tr>
       <tr>
+        <td><code>TestSpecificationCharacterisationTest</code></td><td>unit</td>
+        <td class="tier MEDIUM">MEDIUM</td><td>TestSpecification is GxP MEDIUM; 48 observed calls make its current behaviour the baseline the migration must preserve.</td>
+      </tr>
+      <tr>
+        <td><code>AuditEntryMapperCharacterisationTest</code></td><td>unit</td>
+        <td class="tier MEDIUM">MEDIUM</td><td>AuditEntryMapper is GxP MEDIUM; 0 observed calls make its current behaviour the baseline the migration must preserve.</td>
+      </tr>
+      <tr>
+        <td><code>SignatureMapperCharacterisationTest</code></td><td>unit</td>
+        <td class="tier MEDIUM">MEDIUM</td><td>SignatureMapper is GxP MEDIUM; 0 observed calls make its current behaviour the baseline the migration must preserve.</td>
+      </tr>
+      <tr>
         <td><code>StringHelperCharacterisationTest</code></td><td>unit</td>
         <td class="tier LOW">LOW</td><td>StringHelper is GxP LOW; 326 observed calls make its current behaviour the baseline the migration must preserve.</td>
       </tr>
       <tr>
-        <td><code>BatchMapperCharacterisationTest</code></td><td>unit</td>
-        <td class="tier LOW">LOW</td><td>BatchMapper is GxP LOW; 0 observed calls make its current behaviour the baseline the migration must preserve.</td>
+        <td><code>ReleaseCheckCharacterisationTest</code></td><td>unit</td>
+        <td class="tier LOW">LOW</td><td>ReleaseCheck is GxP LOW; 96 observed calls make its current behaviour the baseline the migration must preserve.</td>
       </tr>
       <tr>
-        <td><code>TestResultMapperCharacterisationTest</code></td><td>unit</td>
-        <td class="tier LOW">LOW</td><td>TestResultMapper is GxP LOW; 0 observed calls make its current behaviour the baseline the migration must preserve.</td>
-      </tr>
-      <tr>
-        <td><code>LegacyExcelExporterCharacterisationTest</code></td><td>unit</td>
-        <td class="tier LOW">LOW</td><td>LegacyExcelExporter is GxP LOW; 0 observed calls make its current behaviour the baseline the migration must preserve.</td>
+        <td><code>CsvFileFilterCharacterisationTest</code></td><td>unit</td>
+        <td class="tier LOW">LOW</td><td>CsvFileFilter is GxP LOW; 72 observed calls make its current behaviour the baseline the migration must preserve.</td>
       </tr>
     </tbody>
   </table>
@@ -495,8 +551,8 @@ class DateHelperCharacterisationTest {
     }
 }
 </pre>
-  <h3>StringHelperCharacterisationTest</h3>
-  <pre>package com.acme.lims.util;
+  <h3>TestSpecificationCharacterisationTest</h3>
+  <pre>package com.acme.lims.result;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -510,7 +566,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * CHARACTERISATION TESTS for com.acme.lims.util.StringHelper
+ * CHARACTERISATION TESTS for com.acme.lims.result.TestSpecification
  *
  * Generated by ModernRx from the architecture twin.
  *
@@ -519,67 +575,37 @@ import org.junit.jupiter.api.Test;
  * not correctness tests: where the legacy behaviour is surprising, the
  * test encodes the surprising behaviour on purpose.
  *
- * GxP tier: LOW
- * Runtime evidence: 326 observed calls.
+ * GxP tier: MEDIUM   Tags: DATA_INTEGRITY
+ * Runtime evidence: 48 observed calls.
  *
  * TO COMPLETE: replace each EXPECTED_* placeholder with the value captured
  * from the legacy system, then run this suite against legacy and
  * modernized builds and require identical results.
  */
-@DisplayName("Characterisation: StringHelper")
-class StringHelperCharacterisationTest {
+@DisplayName("Characterisation: TestSpecification")
+class TestSpecificationCharacterisationTest {
 
-    private StringHelper subject;
+    private TestSpecification subject;
 
     @BeforeEach
     void setUp() {
-        // TODO wire the real collaborators or a test double for StringHelper.
-        // this.subject = new StringHelper(...);
+        // TODO wire the real collaborators or a test double for TestSpecification.
+        // this.subject = new TestSpecification(...);
     }
 
     @Test
-    @DisplayName("join preserves its current behaviour")
-    void characterise_Join() {
+    @DisplayName("describeRange preserves its current behaviour (48 observed calls)")
+    void characterise_DescribeRange() {
 
         // TODO capture the legacy value for this input
         Object EXPECTED_RESULT = null;
-        var actual = subject.join("VALUE_0", "VALUE_1");
-        assertEquals(EXPECTED_RESULT, actual);
-    }
-
-    @Test
-    @DisplayName("padLeft preserves its current behaviour")
-    void characterise_PadLeft() {
-
-        // TODO capture the legacy value for this input
-        Object EXPECTED_RESULT = null;
-        var actual = subject.padLeft("VALUE_0", 11, null);
-        assertEquals(EXPECTED_RESULT, actual);
-    }
-
-    @Test
-    @DisplayName("truncate preserves its current behaviour")
-    void characterise_Truncate() {
-
-        // TODO capture the legacy value for this input
-        Object EXPECTED_RESULT = null;
-        var actual = subject.truncate("VALUE_0", 11);
-        assertEquals(EXPECTED_RESULT, actual);
-    }
-
-    @Test
-    @DisplayName("nvl preserves its current behaviour")
-    void characterise_Nvl() {
-
-        // TODO capture the legacy value for this input
-        Object EXPECTED_RESULT = null;
-        var actual = subject.nvl("VALUE_0", "VALUE_1");
+        var actual = subject.describeRange();
         assertEquals(EXPECTED_RESULT, actual);
     }
 }
 </pre>
-  <h3>BatchMapperCharacterisationTest</h3>
-  <pre>package com.acme.lims.batch;
+  <h3>AuditEntryMapperCharacterisationTest</h3>
+  <pre>package com.acme.lims.audit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -593,7 +619,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * CHARACTERISATION TESTS for com.acme.lims.batch.BatchMapper
+ * CHARACTERISATION TESTS for com.acme.lims.audit.AuditEntryMapper
  *
  * Generated by ModernRx from the architecture twin.
  *
@@ -602,22 +628,22 @@ import org.junit.jupiter.api.Test;
  * not correctness tests: where the legacy behaviour is surprising, the
  * test encodes the surprising behaviour on purpose.
  *
- * GxP tier: LOW
+ * GxP tier: MEDIUM   Tags: DATA_INTEGRITY
  * Runtime evidence: 0 observed calls.
  *
  * TO COMPLETE: replace each EXPECTED_* placeholder with the value captured
  * from the legacy system, then run this suite against legacy and
  * modernized builds and require identical results.
  */
-@DisplayName("Characterisation: BatchMapper")
-class BatchMapperCharacterisationTest {
+@DisplayName("Characterisation: AuditEntryMapper")
+class AuditEntryMapperCharacterisationTest {
 
-    private BatchMapper subject;
+    private AuditEntryMapper subject;
 
     @BeforeEach
     void setUp() {
-        // TODO wire the real collaborators or a test double for BatchMapper.
-        // this.subject = new BatchMapper(...);
+        // TODO wire the real collaborators or a test double for AuditEntryMapper.
+        // this.subject = new AuditEntryMapper(...);
     }
 
     @Test
@@ -668,7 +694,7 @@ class BatchMapperCharacterisationTest {
   </table>
 
   <h2>7. Traceability matrix</h2>
-  <p>3 requirement-to-evidence link(s), derived from the GxP
+  <p>7 requirement-to-evidence link(s), derived from the GxP
   criticality analysis so the matrix stays consistent with the rest of this pack.</p>
   <table>
     <thead><tr>
@@ -679,7 +705,7 @@ class BatchMapperCharacterisationTest {
       <tr>
         <td><code>URS-INT-001</code></td>
         <td>GxP records shall be complete, accurate and attributable throughout their lifecycle.</td>
-        <td><code>ProductBatch</code></td>
+        <td><code>AuditEntryMapper</code></td>
         <td class="tier MEDIUM">MEDIUM</td>
         <td>Replatform</td>
         <td>Unscripted / exploratory testing with recorded results</td>
@@ -695,7 +721,43 @@ class BatchMapperCharacterisationTest {
         <td>System owner, with QA review of the summary</td>
       </tr>
       <tr>
-        <td><code>URS-TIM-003</code></td>
+        <td><code>URS-INT-003</code></td>
+        <td>GxP records shall be complete, accurate and attributable throughout their lifecycle.</td>
+        <td><code>TestSpecification</code></td>
+        <td class="tier MEDIUM">MEDIUM</td>
+        <td>Replatform</td>
+        <td>Unscripted / exploratory testing with recorded results</td>
+        <td>System owner, with QA review of the summary</td>
+      </tr>
+      <tr>
+        <td><code>URS-INT-004</code></td>
+        <td>GxP records shall be complete, accurate and attributable throughout their lifecycle.</td>
+        <td><code>SignatureMapper</code></td>
+        <td class="tier MEDIUM">MEDIUM</td>
+        <td>Replatform</td>
+        <td>Unscripted / exploratory testing with recorded results</td>
+        <td>System owner, with QA review of the summary</td>
+      </tr>
+      <tr>
+        <td><code>URS-INT-005</code></td>
+        <td>GxP records shall be complete, accurate and attributable throughout their lifecycle.</td>
+        <td><code>ProductBatch</code></td>
+        <td class="tier MEDIUM">MEDIUM</td>
+        <td>Replatform</td>
+        <td>Unscripted / exploratory testing with recorded results</td>
+        <td>System owner, with QA review of the summary</td>
+      </tr>
+      <tr>
+        <td><code>URS-INT-006</code></td>
+        <td>GxP records shall be complete, accurate and attributable throughout their lifecycle.</td>
+        <td><code>Sample</code></td>
+        <td class="tier MEDIUM">MEDIUM</td>
+        <td>Replatform</td>
+        <td>Unscripted / exploratory testing with recorded results</td>
+        <td>System owner, with QA review of the summary</td>
+      </tr>
+      <tr>
+        <td><code>URS-TIM-007</code></td>
         <td>GxP records shall be time-stamped from a single authoritative, synchronised time source.</td>
         <td><code>DateHelper</code></td>
         <td class="tier MEDIUM">MEDIUM</td>
@@ -750,28 +812,28 @@ class BatchMapperCharacterisationTest {
     </tr></thead>
     <tbody>
       <tr>
-        <td><code>cluster:5</code></td>
+        <td><code>cluster:1</code></td>
         <td><strong>Replatform</strong></td>
         <td style="font-size:11px">Containerized</td>
         <td>63%</td>
-        <td>2.14 / 2.74 / 4.11</td>
-        <td>ProductBatch, BatchMapper is coupled to an end-of-life runtime. Replatforming onto containers with a managed database removes the operational risk with no functional change, which is validatable as an infrastructure qualification rather than a full re-validation. Security Officer argued for Rehost; that position is recorded as dissent.</td>
+        <td>2.33 / 2.99 / 4.48</td>
+        <td>TestResult, TestSpecification, InstrumentReading is coupled to an end-of-life runtime. Replatforming onto containers with a managed database removes the operational risk with no functional change, which is validatable as an infrastructure qualification rather than a full re-validation. Security Officer argued for Rehost; that position is recorded as dissent.</td>
       </tr>
       <tr>
-        <td><code>cluster:6</code></td>
+        <td><code>cluster:2</code></td>
         <td><strong>Replatform</strong></td>
         <td style="font-size:11px">Containerized</td>
         <td>63%</td>
-        <td>2.16 / 2.77 / 4.16</td>
-        <td>TestResult, TestResultMapper is coupled to an end-of-life runtime. Replatforming onto containers with a managed database removes the operational risk with no functional change, which is validatable as an infrastructure qualification rather than a full re-validation. Security Officer argued for Rehost; that position is recorded as dissent.</td>
+        <td>2.24 / 2.87 / 4.31</td>
+        <td>Sample, ProductBatch, SampleMapper is coupled to an end-of-life runtime. Replatforming onto containers with a managed database removes the operational risk with no functional change, which is validatable as an infrastructure qualification rather than a full re-validation. Security Officer argued for Rehost; that position is recorded as dissent.</td>
       </tr>
       <tr>
-        <td><code>cluster:7</code></td>
+        <td><code>cluster:4</code></td>
         <td><strong>Replatform</strong></td>
         <td style="font-size:11px">Containerized</td>
         <td>72%</td>
-        <td>2.15 / 2.76 / 4.14</td>
-        <td>StringHelper, DateHelper is coupled to an end-of-life runtime. Replatforming onto containers with a managed database removes the operational risk with no functional change, which is validatable as an infrastructure qualification rather than a full re-validation. Security Officer argued for Rehost; that position is recorded as dissent.</td>
+        <td>2.22 / 2.85 / 4.27</td>
+        <td>StringHelper, ReleaseCheck, DateHelper is coupled to an end-of-life runtime. Replatforming onto containers with a managed database removes the operational risk with no functional change, which is validatable as an infrastructure qualification rather than a full re-validation. Security Officer argued for Rehost; that position is recorded as dissent.</td>
       </tr>
       <tr>
         <td><code>cluster:8</code></td>
@@ -784,7 +846,16 @@ class BatchMapperCharacterisationTest {
     </tbody>
   </table>
 
-    <h3>Recorded dissent &mdash; cluster:5</h3>
+    <h3>Recorded dissent &mdash; cluster:1</h3>
+    <table>
+      <thead><tr><th>Agent</th><th>Position</th><th>Reason</th></tr></thead>
+      <tbody>
+        <tr><td>Security Officer</td><td><strong>Rehost</strong></td><td>Cloud Architect (Replatform), Validation & QA Lead (Replatform), FinOps Analyst (Retain) differ on strategy, which does not affect my position: my conditions attach to whichever option is chosen. I will rank them - no blocking finding is the one that must precede any migration. No blocking security </td></tr>
+        <tr><td>FinOps Analyst</td><td><strong>Retain</strong></td><td>Cloud Architect (Replatform), Validation & QA Lead (Replatform), Security Officer (Rehost) disagree. I have weighed their arguments and hold my position. Only 48 runtime hits across the traced period. There is no cost of delay here. Spend the wave-1 budget on the high-traffic paths and revisit this </td></tr>
+        <tr><td>Regulatory Affairs</td><td><strong>Rehost</strong></td><td>Cloud Architect (Replatform), Validation & QA Lead (Replatform), FinOps Analyst (Retain) differ on strategy. My obligations are sequenced, not blocking: the supplier assessment must exist before cutover, the residency documentation can run concurrently. No GxP records in this cluster, so no supplier</td></tr>
+      </tbody>
+    </table>
+    <h3>Recorded dissent &mdash; cluster:2</h3>
     <table>
       <thead><tr><th>Agent</th><th>Position</th><th>Reason</th></tr></thead>
       <tbody>
@@ -793,16 +864,7 @@ class BatchMapperCharacterisationTest {
         <tr><td>Regulatory Affairs</td><td><strong>Rehost</strong></td><td>Cloud Architect (Replatform), Validation & QA Lead (Replatform), FinOps Analyst (Retain) differ on strategy. My obligations are sequenced, not blocking: the supplier assessment must exist before cutover, the residency documentation can run concurrently. No GxP records in this cluster, so no supplier</td></tr>
       </tbody>
     </table>
-    <h3>Recorded dissent &mdash; cluster:6</h3>
-    <table>
-      <thead><tr><th>Agent</th><th>Position</th><th>Reason</th></tr></thead>
-      <tbody>
-        <tr><td>Security Officer</td><td><strong>Rehost</strong></td><td>Cloud Architect (Replatform), Validation & QA Lead (Replatform), FinOps Analyst (Retain) differ on strategy, which does not affect my position: my conditions attach to whichever option is chosen. I will rank them - no blocking finding is the one that must precede any migration. No blocking security </td></tr>
-        <tr><td>FinOps Analyst</td><td><strong>Retain</strong></td><td>Cloud Architect (Replatform), Validation & QA Lead (Replatform), Security Officer (Rehost) disagree. I have weighed their arguments and hold my position. Only 0 runtime hits across the traced period. There is no cost of delay here. Spend the wave-1 budget on the high-traffic paths and revisit this w</td></tr>
-        <tr><td>Regulatory Affairs</td><td><strong>Rehost</strong></td><td>Cloud Architect (Replatform), Validation & QA Lead (Replatform), FinOps Analyst (Retain) differ on strategy. My obligations are sequenced, not blocking: the supplier assessment must exist before cutover, the residency documentation can run concurrently. No GxP records in this cluster, so no supplier</td></tr>
-      </tbody>
-    </table>
-    <h3>Recorded dissent &mdash; cluster:7</h3>
+    <h3>Recorded dissent &mdash; cluster:4</h3>
     <table>
       <thead><tr><th>Agent</th><th>Position</th><th>Reason</th></tr></thead>
       <tbody>
@@ -818,12 +880,12 @@ class BatchMapperCharacterisationTest {
   <table>
     <thead><tr><th>Percentile</th><th>Weeks</th><th>Date</th></tr></thead>
     <tbody>
-      <tr><td>P50</td><td>27.2</td>
-          <td>2027-04-21</td></tr>
-      <tr><td>P80</td><td>28.9</td>
-          <td>2027-05-03</td></tr>
-      <tr><td>P95</td><td>30.6</td>
-          <td>2027-05-15</td></tr>
+      <tr><td>P50</td><td>22.1</td>
+          <td>2027-03-16</td></tr>
+      <tr><td>P80</td><td>23.9</td>
+          <td>2027-03-29</td></tr>
+      <tr><td>P95</td><td>25.5</td>
+          <td>2027-04-09</td></tr>
     </tbody>
   </table>
 
@@ -843,7 +905,7 @@ class BatchMapperCharacterisationTest {
 
 
   <footer>
-    Generated by ModernRx on 2026-10-13T07:04:03+00:00 &middot;
+    Generated by ModernRx on 2026-10-13T09:22:30+00:00 &middot;
     AcmeLIMS &middot; Wave 1 &middot; Target cloud AWS<br>
     Draft generated by ModernRx to support - not replace - the organization's validation process. Every section requires review and approval by qualified personnel before use. ModernRx is a decision-support tool: it does not validate software, and its output is not evidence of validation.
   </footer>

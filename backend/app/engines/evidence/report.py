@@ -524,7 +524,7 @@ def _reportlab_pdf(d: dict[str, Any], out: Path) -> None:
               p("Effort (wks)", cellb), p("Rationale", cellb)]]
             + [[p(str(x.get("cluster_id")), cell), p(x.get("strategy"), cellb),
                 p(f"{float(x.get('confidence') or 0):.0%}", cell),
-                p("/".join(str(v) for v in (x.get("effort_weeks") or [])), cell),
+                p("/".join(str(v) for v in x["effort_weeks"]) if isinstance(x.get("effort_weeks"), (list, tuple)) else str(x.get("effort_weeks") or ""), cell),
                 p(x.get("rationale"), cell)]
                for x in decs[:14]],
             [W * 0.13, W * 0.12, W * 0.07, W * 0.13, W * 0.55],

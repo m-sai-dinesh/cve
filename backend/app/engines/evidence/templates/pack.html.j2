@@ -341,9 +341,9 @@
       <tr>
         <td><code>{{ x.cluster_id }}</code></td>
         <td><strong>{{ x.strategy }}</strong></td>
-        <td style="font-size:11px">{{ x.target_pattern | join(", ") }}</td>
+        <td style="font-size:11px">{% if x.target_pattern is iterable and x.target_pattern is not string %}{{ x.target_pattern | join(", ") }}{% else %}{{ x.target_pattern or "" }}{% endif %}</td>
         <td>{{ "%.0f" | format((x.confidence or 0) * 100) }}%</td>
-        <td>{{ x.effort_weeks | join(" / ") }}</td>
+        <td>{% if x.effort_weeks is iterable and x.effort_weeks is not string %}{{ x.effort_weeks | join(" / ") }}{% else %}{{ x.effort_weeks or "" }}{% endif %}</td>
         <td>{{ x.rationale }}</td>
       </tr>
     {% endfor %}

@@ -6,6 +6,7 @@ import {
   Clock, HelpCircle, Layers, Play, RefreshCw, Sliders,
   TrendingUp, Users,
 } from "lucide-react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import React from "react";
 import {
@@ -45,7 +46,10 @@ export default function RoadmapPage() {
       Api.whatif(id, body),
   });
 
+  const [scheduleError, setScheduleError] = React.useState<string>("");
+
   const runScheduler = async () => {
+    setScheduleError("");
     try {
       const { job_id } = await Api.runRoadmap(id, {
         squads,
@@ -53,7 +57,7 @@ export default function RoadmapPage() {
       });
       job.attach(job_id);
     } catch (e) {
-      alert(apiError(e));
+      setScheduleError(apiError(e));
     }
   };
 
@@ -67,8 +71,84 @@ export default function RoadmapPage() {
   if (roadmapQuery.isLoading) {
     return <Loading label="Solving OR-Tools CP-SAT schedule and running 10,000 Monte Carlo simulations" rows={5} />;
   }
-  if (roadmapQuery.error) {
+
+  const isNoRoadmap =
+    Boolean(roadmapQuery.error) &&
+    (apiError(roadmapQuery.error).toLowerCase().includes("no roadmap") ||
+      (roadmapQuery.error as any)?.status === 409);
+
+  if (roadmapQuery.error && !isNoRoadmap) {
     return <ErrorNote error={apiError(roadmapQuery.error)} retry={() => roadmapQuery.refetch()} />;
+  }
+
+  if (isNoRoadmap) {
+    return (
+      <div className="space-y-5">
+        <PageHeader
+          kicker="Engine 6 — Schedule Optimization & Risk Simulation"
+          title="Migration Roadmap & Monte Carlo"
+          subtitle="OR-Tools CP-SAT constraint solver schedules migration waves honoring GxP freeze windows and strangler order. 10,000 Monte Carlo runs provide confident delivery commitments."
+          actions={
+            <div className="flex items-center gap-2">
+              <button
+                onClick={runScheduler}
+                disabled={job.busy}
+                className="btn-primary text-xs"
+              >
+                {job.busy ? <Spinner className="text-white" /> : <Play className="h-3.5 w-3.5" />}
+                Run Schedule Optimizer
+              </button>
+            </div>
+          }
+        />
+
+        {scheduleError && (
+          <Banner tone="warn" title="Schedule Optimization Notice">
+            {scheduleError}
+            {scheduleError.toLowerCase().includes("council") && (
+              <span className="block mt-1">
+                <Link href={`/projects/${id}/council`} className="underline font-semibold">
+                  Open Architecture Council
+                </Link>{" "}
+                to review and propose decisions before scheduling.
+              </span>
+            )}
+          </Banner>
+        )}
+
+        {job.busy && (
+          <Card title="Solving Optimal Migration Waves">
+            <ProgressBar value={job.progress} label={job.step} status={job.status} />
+          </Card>
+        )}
+
+        <Card title="No Migration Roadmap Generated Yet" subtitle="Engine 6 — Constraint Optimization">
+          <Empty
+            icon={<Calendar className="h-7 w-7" />}
+            title="Migration Schedule Not Yet Solved"
+            hint="Run the OR-Tools CP-SAT constraint solver to schedule migration waves honoring GxP freeze windows, team squad capacity, and Strangler Fig dependency ordering."
+            action={
+              <div className="flex flex-col items-center gap-2">
+                <button
+                  onClick={runScheduler}
+                  disabled={job.busy}
+                  className="btn-primary text-xs"
+                >
+                  {job.busy ? <Spinner className="text-white" /> : <Play className="h-3.5 w-3.5" />}
+                  Generate Roadmap Schedule
+                </button>
+                <span className="text-2xs text-muted">
+                  Requires AI Architecture Council decisions. If not run yet,{" "}
+                  <Link href={`/projects/${id}/council`} className="underline font-semibold text-accent">
+                    review Architecture Council
+                  </Link>.
+                </span>
+              </div>
+            }
+          />
+        </Card>
+      </div>
+    );
   }
 
   const data = roadmapQuery.data!;
@@ -109,6 +189,12 @@ export default function RoadmapPage() {
           </div>
         }
       />
+
+      {scheduleError && (
+        <Banner tone="warn" title="Schedule Optimization Notice">
+          {scheduleError}
+        </Banner>
+      )}
 
       {job.busy && (
         <Card title="Solving Optimal Migration Waves">

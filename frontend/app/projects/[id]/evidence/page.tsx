@@ -5,6 +5,7 @@ import {
   AlertTriangle, Check, CheckCircle2, Download, Eye, FileCheck2,
   FileCode2, FileText, Layers, Play, RefreshCw, ShieldCheck, Table,
 } from "lucide-react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import React from "react";
 import { Api, apiError, type EvidencePackRow } from "@/lib/api";
@@ -22,6 +23,8 @@ export default function EvidencePage() {
   const [activeTab, setActiveTab] = React.useState<"packs" | "csa" | "traceability" | "tests" | "migration">("packs");
   const [selectedWave, setSelectedWave] = React.useState<number>(1);
 
+  const [genError, setGenError] = React.useState<string>("");
+
   const job = useJob([["evidence", id], ["project", id]]);
 
   const packsQuery = useQuery({
@@ -29,12 +32,30 @@ export default function EvidencePage() {
     queryFn: () => Api.evidencePacks(id),
   });
 
+  const roadmapQuery = useQuery({
+    queryKey: ["roadmap", id],
+    queryFn: () => Api.roadmap(id),
+    retry: false,
+  });
+
+  const waves: Array<{ wave: number }> = (roadmapQuery.data?.schedule?.waves || []).map((w: any) => ({
+    wave: Number(w.wave),
+  }));
+  const hasRoadmap = Boolean(roadmapQuery.data?.schedule && waves.length > 0);
+
+  React.useEffect(() => {
+    if (waves.length > 0 && !waves.some((w) => w.wave === selectedWave)) {
+      setSelectedWave(waves[0].wave);
+    }
+  }, [waves, selectedWave]);
+
   const generatePack = async (wave: number) => {
+    setGenError("");
     try {
       const { job_id } = await Api.runEvidence(id, wave);
       job.attach(job_id);
     } catch (e) {
-      alert(apiError(e));
+      setGenError(apiError(e));
     }
   };
 
@@ -55,17 +76,63 @@ export default function EvidencePage() {
         subtitle="Auto-generates an audit-ready Computer Software Assurance (CSA) plan, traceability matrix, automated characterization tests, and data migration checks compiled as an exportable PDF."
         actions={
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => generatePack(selectedWave)}
-              disabled={job.busy}
-              className="btn-primary text-xs"
-            >
-              {job.busy ? <Spinner className="text-white" /> : <Play className="h-3.5 w-3.5" />}
-              Generate Evidence Pack (Wave {selectedWave})
-            </button>
+            {hasRoadmap ? (
+              <>
+                {waves.length > 1 && (
+                  <select
+                    value={selectedWave}
+                    onChange={(e) => setSelectedWave(parseInt(e.target.value, 10))}
+                    className="input py-1 text-xs max-w-[120px]"
+                  >
+                    {waves.map((w) => (
+                      <option key={w.wave} value={w.wave}>
+                        Wave {w.wave}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                <button
+                  onClick={() => generatePack(selectedWave)}
+                  disabled={job.busy}
+                  className="btn-primary text-xs"
+                >
+                  {job.busy ? <Spinner className="text-white" /> : <Play className="h-3.5 w-3.5" />}
+                  Generate Evidence Pack (Wave {selectedWave})
+                </button>
+              </>
+            ) : (
+              <Link href={`/projects/${id}/roadmap`} className="btn-primary text-xs">
+                <Play className="h-3.5 w-3.5" />
+                Run Roadmap Optimizer
+              </Link>
+            )}
           </div>
         }
       />
+
+      {genError && (
+        <Banner tone="warn" title="Evidence Pack Generation Notice">
+          {genError}
+          {genError.toLowerCase().includes("roadmap") && (
+            <span className="block mt-1">
+              <Link href={`/projects/${id}/roadmap`} className="underline font-semibold">
+                Open Roadmap Optimizer
+              </Link>{" "}
+              to calculate migration waves first.
+            </span>
+          )}
+        </Banner>
+      )}
+
+      {!hasRoadmap && !roadmapQuery.isLoading && (
+        <Banner tone="warn" title="Migration Roadmap Required">
+          Audit evidence packs are compiled per migration wave. No migration roadmap has been solved yet. Run the{" "}
+          <Link href={`/projects/${id}/roadmap`} className="underline font-semibold">
+            Roadmap Optimizer
+          </Link>{" "}
+          to establish migration waves before generating assurance evidence.
+        </Banner>
+      )}
 
       {job.busy && (
         <Card title="Compiling Audit Evidence Pack PDF" subtitle={job.step || "rendering..."}>
@@ -162,38 +229,59 @@ export default function EvidencePage() {
             title="Generated Regulatory PDF Evidence Packs"
             subtitle="Immutable PDF documents compiling system descriptions, C4 diagrams, CSA testing protocols, and traceability matrices."
             actions={
-              <div className="flex items-center gap-2">
-                <span className="text-2xs text-muted">Select Target Wave:</span>
-                <select
-                  value={selectedWave}
-                  onChange={(e) => setSelectedWave(parseInt(e.target.value, 10))}
-                  className="input py-1 text-xs max-w-[120px]"
-                >
-                  <option value={1}>Wave 1</option>
-                  <option value={2}>Wave 2</option>
-                  <option value={3}>Wave 3</option>
-                </select>
-                <button
-                  onClick={() => generatePack(selectedWave)}
-                  disabled={job.busy}
-                  className="btn-primary py-1 px-3 text-xs"
-                >
-                  Generate Wave {selectedWave} PDF
-                </button>
-              </div>
+              hasRoadmap ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-2xs text-muted">Select Target Wave:</span>
+                  <select
+                    value={selectedWave}
+                    onChange={(e) => setSelectedWave(parseInt(e.target.value, 10))}
+                    className="input py-1 text-xs max-w-[120px]"
+                  >
+                    {waves.map((w) => (
+                      <option key={w.wave} value={w.wave}>
+                        Wave {w.wave}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={() => generatePack(selectedWave)}
+                    disabled={job.busy}
+                    className="btn-primary py-1 px-3 text-xs"
+                  >
+                    Generate Wave {selectedWave} PDF
+                  </button>
+                </div>
+              ) : (
+                <Link href={`/projects/${id}/roadmap`} className="btn-primary py-1 px-3 text-xs">
+                  Run Roadmap Optimizer
+                </Link>
+              )
             }
           >
             {packs.length === 0 ? (
-              <Empty
-                icon={<FileText className="h-7 w-7" />}
-                title="No Evidence Packs Generated Yet"
-                hint="Click 'Generate Evidence Pack' to assemble the CSA assurance plan, C4 diagrams, and characterization test suite into a downloadable PDF."
-                action={
-                  <button onClick={() => generatePack(1)} className="btn-primary text-xs">
-                    <Play className="h-3.5 w-3.5" /> Generate Wave 1 Evidence Pack
-                  </button>
-                }
-              />
+              !hasRoadmap ? (
+                <Empty
+                  icon={<FileText className="h-7 w-7" />}
+                  title="Migration Roadmap Required"
+                  hint="Audit evidence packs compile CSA testing protocols, traceability matrices, and verification checks for a specific wave. Run the Roadmap Optimizer to solve migration waves first."
+                  action={
+                    <Link href={`/projects/${id}/roadmap`} className="btn-primary text-xs">
+                      <Play className="h-3.5 w-3.5" /> Open Roadmap Optimizer
+                    </Link>
+                  }
+                />
+              ) : (
+                <Empty
+                  icon={<FileText className="h-7 w-7" />}
+                  title="No Evidence Packs Generated Yet"
+                  hint="Click 'Generate Evidence Pack' to assemble the CSA assurance plan, C4 diagrams, and characterization test suite into a downloadable PDF."
+                  action={
+                    <button onClick={() => generatePack(selectedWave)} disabled={job.busy} className="btn-primary text-xs">
+                      <Play className="h-3.5 w-3.5" /> Generate Wave {selectedWave} Evidence Pack
+                    </button>
+                  }
+                />
+              )
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
