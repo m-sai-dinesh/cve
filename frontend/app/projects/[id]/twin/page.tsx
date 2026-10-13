@@ -213,7 +213,7 @@ export default function TwinPage() {
               nodes={filteredNodes}
               edges={filteredEdges}
               selectedNodeId={selectedNode}
-              onSelectNode={(nodeId) => selectNode(nodeId)}
+              onSelectNode={selectNode}
               className="h-full w-full"
             />
           </div>

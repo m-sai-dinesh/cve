@@ -34,7 +34,13 @@ export function TwinCytoscape({
 }: TwinCytoscapeProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const cyRef = React.useRef<cytoscape.Core | null>(null);
+  const layoutRef = React.useRef<cytoscape.Layouts | null>(null);
+  const onSelectNodeRef = React.useRef(onSelectNode);
   const theme = useApp((s) => s.theme);
+
+  React.useEffect(() => {
+    onSelectNodeRef.current = onSelectNode;
+  }, [onSelectNode]);
 
   React.useEffect(() => {
     if (!containerRef.current) return;
@@ -145,70 +151,130 @@ export function TwinCytoscape({
         },
       ],
       layout: {
-        name: "cose",
-        idealEdgeLength: () => 100,
-        nodeOverlap: 20,
-        refresh: 20,
-        fit: true,
-        padding: 30,
-        randomize: false,
-        componentSpacing: 100,
-        nodeRepulsion: () => 400000,
-        edgeElasticity: () => 100,
-        nestingFactor: 5,
-        gravity: 80,
-        numIter: 1000,
-        initialTemp: 200,
-        coolingFactor: 0.95,
-        minTemp: 1.0,
-      } as any,
+        name: "preset",
+      },
     });
+
+    // Guard against cytoscape notifying a destroyed renderer in delayed callbacks
+    const origEndBatch = cy.endBatch.bind(cy);
+    cy.endBatch = function () {
+      if (cy.destroyed() || !(cy as any).renderer?.()) {
+        return cy;
+      }
+      return origEndBatch();
+    };
+
+    const origBatch = cy.batch.bind(cy);
+    cy.batch = function (callback: any) {
+      if (cy.destroyed() || !(cy as any).renderer?.()) {
+        return cy;
+      }
+      return origBatch(callback);
+    };
+
+    // Run layout with animate: false to avoid uncoordinated RAF loops
+    const layout = cy.layout({
+      name: "cose",
+      animate: false,
+      idealEdgeLength: () => 100,
+      nodeOverlap: 20,
+      refresh: 20,
+      fit: true,
+      padding: 30,
+      randomize: false,
+      componentSpacing: 100,
+      nodeRepulsion: () => 400000,
+      edgeElasticity: () => 100,
+      nestingFactor: 5,
+      gravity: 80,
+      numIter: 1000,
+      initialTemp: 200,
+      coolingFactor: 0.95,
+      minTemp: 1.0,
+    } as any);
+
+    layoutRef.current = layout;
+    layout.run();
 
     cy.on("tap", "node", (evt) => {
       const node = evt.target;
-      onSelectNode(node.id());
+      onSelectNodeRef.current(node.id());
     });
 
     cy.on("tap", (evt) => {
       if (evt.target === cy) {
-        onSelectNode(null);
+        onSelectNodeRef.current(null);
       }
     });
 
     cyRef.current = cy;
 
     return () => {
-      cy.destroy();
+      try {
+        layoutRef.current?.stop();
+      } catch {}
+      layoutRef.current = null;
+      try {
+        cy.stop();
+      } catch {}
+      try {
+        cy.destroy();
+      } catch {}
+      cyRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nodes, edges, theme, onSelectNode]);
+  }, [nodes, edges, theme]);
 
   // Update selected node border without rebuilding full layout
   React.useEffect(() => {
-    if (!cyRef.current) return;
+    if (!cyRef.current || cyRef.current.destroyed()) return;
     const cy = cyRef.current;
     const isDark = theme === "dark";
 
-    cy.nodes().forEach((n) => {
-      if (n.id() === selectedNodeId) {
-        n.style({
-          "border-width": 4,
-          "border-color": isDark ? "#38bdf8" : "#0284c7",
+    try {
+      cy.batch(() => {
+        cy.nodes().forEach((n) => {
+          if (n.id() === selectedNodeId) {
+            n.style({
+              "border-width": 4,
+              "border-color": isDark ? "#38bdf8" : "#0284c7",
+            });
+          } else {
+            n.style({
+              "border-width": 2,
+              "border-color": isDark ? "#334155" : "#cbd5e1",
+            });
+          }
         });
-      } else {
-        n.style({
-          "border-width": 2,
-          "border-color": isDark ? "#334155" : "#cbd5e1",
-        });
-      }
-    });
+      });
+    } catch {}
   }, [selectedNodeId, theme]);
 
-  const handleZoomIn = () => cyRef.current?.zoom(cyRef.current.zoom() * 1.25);
-  const handleZoomOut = () => cyRef.current?.zoom(cyRef.current.zoom() * 0.8);
-  const handleFit = () => cyRef.current?.fit(undefined, 30);
+  const handleZoomIn = () => {
+    if (!cyRef.current || cyRef.current.destroyed()) return;
+    cyRef.current.zoom(cyRef.current.zoom() * 1.25);
+  };
+  const handleZoomOut = () => {
+    if (!cyRef.current || cyRef.current.destroyed()) return;
+    cyRef.current.zoom(cyRef.current.zoom() * 0.8);
+  };
+  const handleFit = () => {
+    if (!cyRef.current || cyRef.current.destroyed()) return;
+    cyRef.current.fit(undefined, 30);
+  };
   const handleReset = () => {
-    cyRef.current?.layout({ name: "cose", fit: true, padding: 30 }).run();
+    if (!cyRef.current || cyRef.current.destroyed()) return;
+    try {
+      layoutRef.current?.stop();
+      const l = cyRef.current.layout({
+        name: "cose",
+        animate: false,
+        fit: true,
+        padding: 30,
+      } as any);
+      layoutRef.current = l;
+      l.run();
+    } catch {}
   };
 
   return (
