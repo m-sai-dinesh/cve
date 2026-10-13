@@ -123,7 +123,7 @@ export default function AuditPage() {
         />
         <Kpi
           label="Model Governance"
-          value="gemini-2.5-pro"
+          value="gemini-3.1-flash-lite"
           tone="accent"
           hint="Pinned model ID (Annex 22)"
         />

@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     # ---- LLM (PRD §15: model version is pinned and recorded with every output) ----
     gemini_api_key: str = ""
-    llm_model: str = "gemini-2.5-pro"
+    llm_model: str = "gemini-3.1-flash-lite"
     llm_temperature: float = 0.2
     llm_max_output_tokens: int = 4000
     llm_send_raw_code: bool = False

@@ -354,7 +354,7 @@ export default function CouncilPage() {
                 <div>
                   <span className="text-muted block">Model Provenance:</span>
                   <span className="font-mono font-bold text-accent truncate block">
-                    {dec.provenance.model_id || "gemini-2.5-pro"}
+                    {dec.provenance.model_id || "gemini-3.1-flash-lite"}
                   </span>
                 </div>
                 <div>

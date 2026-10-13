@@ -122,37 +122,52 @@ class LLMClient:
         if schema is not None:
             cfg["response_mime_type"] = "application/json"
             cfg["response_schema"] = schema
-        try:
-            resp = self._client.models.generate_content(
-                model=self.model_id, contents=prompt, config=gt.GenerateContentConfig(**cfg)
-            )
-            res.text = (resp.text or "").strip()
-            meta = getattr(resp, "usage_metadata", None)
-            if meta is not None:
-                res.usage = {
-                    "prompt_tokens": getattr(meta, "prompt_token_count", None),
-                    "output_tokens": getattr(meta, "candidates_token_count", None),
-                    "total_tokens": getattr(meta, "total_token_count", None),
-                }
-            if schema is not None:
-                res.data = _loose_json(res.text)
-                if res.data is None:
-                    res.error = "model returned text that is not valid JSON"
-        except Exception as exc:
-            res.error = f"{type(exc).__name__}: {exc}"
+        models_to_try = [self.model_id]
+        for fm in ("gemini-3.1-flash-lite", "gemini-3.5-flash-lite"):
+            if fm not in models_to_try:
+                models_to_try.append(fm)
+
+        last_error = ""
+        for mid in models_to_try:
+            try:
+                resp = self._client.models.generate_content(
+                    model=mid, contents=prompt, config=gt.GenerateContentConfig(**cfg)
+                )
+                res.model_id = mid
+                res.text = (resp.text or "").strip()
+                meta = getattr(resp, "usage_metadata", None)
+                if meta is not None:
+                    res.usage = {
+                        "prompt_tokens": getattr(meta, "prompt_token_count", None),
+                        "output_tokens": getattr(meta, "candidates_token_count", None),
+                        "total_tokens": getattr(meta, "total_token_count", None),
+                    }
+                if schema is not None:
+                    res.data = _loose_json(res.text)
+                    if res.data is None:
+                        res.error = "model returned text that is not valid JSON"
+                res.error = ""
+                break
+            except Exception as exc:
+                last_error = f"{type(exc).__name__}: {exc}"
+                log.warning("gemini_call_failed", model=mid, error=last_error)
+                continue
+        else:
+            res.error = last_error
             res.generator = "deterministic"
-            log.warning("gemini_call_failed", error=res.error)
         return res
 
     def count_tokens(self, text: str) -> int | None:
         """Token budgeting via the SDK (PRD §6.2) with a ~4-chars/token fallback."""
         if not self.available:
             return max(1, len(text) // 4)
-        try:
-            r = self._client.models.count_tokens(model=self.model_id, contents=text)
-            return getattr(r, "total_tokens", None)
-        except Exception:
-            return max(1, len(text) // 4)
+        for mid in [self.model_id, "gemini-3.1-flash-lite"]:
+            try:
+                r = self._client.models.count_tokens(model=mid, contents=text)
+                return getattr(r, "total_tokens", None)
+            except Exception:
+                continue
+        return max(1, len(text) // 4)
 
 
 def _loose_json(text: str) -> Any | None:
